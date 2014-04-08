@@ -1,0 +1,284 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+   
+     <title> Lab-12 </title>
+   
+     <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+     <link rel="stylesheet" href="./style/semantic/css/semantic.min.css" type="text/css">  
+     <link rel="stylesheet" href="./style/custom/main.css" type="text/css"> 
+   
+     <script src="./style/custom/jquery-2.1.0.min.js"></script> 
+     <script src="./style/custom/jquery.address-1.6.min.js"></script>
+     <script src="./style/semantic/javascript/semantic.min.js"></script>
+   
+     <link rel="stylesheet" href="./style/highlight/school_book.css">
+     <script src="./style/highlight/highlight.pack.js"></script> 
+     <script>hljs.initHighlightingOnLoad();</script>
+   
+     <script src="./style/custom/common.js"> </script> 
+     <script src="./style/custom/main.js"> </script> 
+  </head>
+  <body>
+  <nav class="ui fixed top pointing borderless inverted menu">
+    <header class="header item"> <a href="../index.html">Forms
+</a></header>
+    <div class="right tab-menu menu">
+          <a class="item" data-tab="Lab-12"> Lab-12 </a>
+          <a class="item" data-tab="01"> 01 </a>
+          <a class="item" data-tab="02"> 02 </a>
+          <a class="item" data-tab="03"> 03 </a>
+          <a class="item" data-tab="04"> 04 </a>
+          <a class="item" data-tab="Exercises"> Exercises </a>
+    </div>
+  </nav>
+
+  <br>
+
+	  <section data-tab="Lab-12" class="ui tab stacked moodle-book segment">
+	     <h1>Objectives</h1>
+<ul>
+<li>Implement a "New Player" Dialog, alowing a players team to be selected before the player object is saved.</li>
+<li>Implement an "Edit Player" view, enabling an existing players properties to be changed</li>
+</ul>
+	  </section>
+	  <section data-tab="01" class="ui tab stacked moodle-book segment">
+	     <h1>Setup</h1>
+<p>Use the output from Lab-08, or this archive here at the starter project:</p>
+<ul>
+<li><a href="archives/jpamodel.zip">jpamodel.zip</a></li>
+</ul>
+	  </section>
+	  <section data-tab="02" class="ui tab stacked moodle-book segment">
+	     <h1>New Player</h1>
+<p>In the Players controller, replace the current <code>newPlayer</code> method with the following:</p>
+<pre><code class="java">  public static void newPlayer(String name, String club)
+  {
+    Player player = new Player (name);
+    Club theClub = Club.findByName(club);
+    if (theClub != null)
+    {
+      theClub.addPlayer(player);
+      theClub.save();
+    }
+    else
+    {
+      player.save();
+    }
+    index();
+  }
+</code></pre>
+
+<p>It takes an extra parameter, the name of the club the player is to belong to.</p>
+<p>We need to allow the user to select this in the view - open <code>views/Players/addplayer.html</code> and introduce the new <code>select</code> element as shown:</p>
+<pre><code class="html">&lt;section class=&quot;ui raised form segment&quot;&gt;
+  &lt;form action=&quot;/players/newplayer&quot; method=&quot;POST&quot;&gt;
+    &lt;div class=&quot;field&quot;&gt;
+      &lt;label&gt; Player Name &lt;/label&gt;
+      &lt;input type=&quot;text&quot; name=&quot;name&quot;&gt;
+    &lt;/div&gt;  
+    &lt;div class=&quot;field&quot;&gt;  
+      &lt;select name=&quot;club&quot;&gt;
+        #{list items:clubs, as:'club'}
+          &lt;option&gt;${club.name}&lt;/option&gt;
+        #{/list}
+      &lt;/select&gt;
+    &lt;/div&gt;  
+    &lt;button class=&quot;ui blue submit button&quot;&gt;Add&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Try this now and it should work - ie. you should be able to select a club for the player to belong to.</p>
+<p>The styling is blank though, so change this now, based on some examples here:</p>
+<ul>
+<li><a href="http://semantic-ui.com/modules/dropdown.html">http://semantic-ui.com/modules/dropdown.html</a></li>
+</ul>
+<p>Replace the <code>&lt;select&gt;</code> element above with the following:</p>
+<pre><code class="html">    &lt;div class=&quot;field&quot;&gt;  
+      &lt;div class=&quot;ui selection dropdown&quot;&gt;
+        &lt;input type=&quot;hidden&quot; name=&quot;club&quot;&gt;
+        &lt;div class=&quot;default text&quot;&gt;Select Club&lt;/div&gt;
+        &lt;i class=&quot;dropdown icon&quot;&gt;&lt;/i&gt;
+        &lt;div class=&quot;menu&quot;&gt;
+         #{list items:clubs, as:'club'}
+           &lt;div class=&quot;item&quot;&gt;${club.name}&lt;/div&gt;
+          #{/list}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p>And try it out. Although the control will appear, it wont quite work. This is because we are missing some initiualiation code for the drop down control. This can be inserter into <code>views/main.html</code> - at the end of the <code>&lt;block&gt;</code> element:</p>
+<pre><code class="html">  ...
+  &lt;body&gt;
+    #{doLayout /}
+    &lt;script&gt;
+      $('.ui.dropdown').dropdown();
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>Try this out now, it should work as expected.</p>
+<p>Experiment with other styles on:</p>
+<ul>
+<li><a href="http://semantic-ui.com/modules/dropdown.html">http://semantic-ui.com/modules/dropdown.html</a></li>
+</ul>
+	  </section>
+	  <section data-tab="03" class="ui tab stacked moodle-book segment">
+	     <h1>Edit Player Views</h1>
+<p>We could bring in a view to permit an existing player to be edited - either his name changed, or club or both.</p>
+<p>First create a new view in <code>views/players</code> called <code>editplayer.html</code>:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Edit Player Details' /}
+
+</code></pre>
+
+<p>This is empty for the moment.</p>
+<p>We need two new actions in <code>Players</code> controller:</p>
+<pre><code class="java">  public static void editPlayer(Long id)
+  {
+    Player player = Player.findById(id);
+    List&lt;Club&gt; clubs = Club.findAll();
+    render(player, clubs);
+  }
+
+  public static void changePlayer(Long id, String name, Long club)
+  {
+    // todo
+    index();
+  }  
+</code></pre>
+
+<p>... and two new routes route to trigger these actions:</p>
+<pre><code class="html">GET    /players/editplayer/{id}                 Players.editPlayer
+POST   /players/changeplayer/{id}               Players.changePlayer
+</code></pre>
+
+<p>Now, in <code>views/players/index.html', extend the table to include an</code>edit` button which will use the GET route above:</p>
+<pre><code class="html">...
+...
+&lt;section class=&quot;ui raised segment&quot;&gt;
+ &lt;h1&gt;Players&lt;/h1&gt;
+  &lt;table class=&quot;ui table&quot;&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt; Player&lt;/th&gt;
+        &lt;th&gt; Club &lt;/th&gt;
+        &lt;th&gt; &lt;/th&gt;
+        &lt;th&gt; &lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        #{list items:players, as:'player'}
+          &lt;tr&gt;
+            &lt;td&gt;${player.name}&lt;/td&gt;
+            &lt;td&gt;  ${player.club?.name} &lt;/td&gt;
+            &lt;td&gt;
+            &lt;a class=&quot;ui ui icon button&quot; href=&quot;/players/delete/${player.id}&quot;&gt;
+             &lt;i class=&quot;delete red icon&quot;&gt;&lt;/i&gt;
+            &lt;/a&gt;
+          &lt;/td&gt;
+            &lt;td&gt;
+           &lt;a class=&quot;ui icon button &quot; href=&quot;/players/editplayer/${player.id}&quot;&gt;
+              &lt;i class=&quot;edit icon&quot;&gt;&lt;/i&gt;
+           &lt;/a&gt;
+          &lt;/td&gt;
+          &lt;/tr&gt;
+        #{/list}
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+  &lt;a class=&quot;ui blue button&quot; href=&quot;/players/addplayer&quot;&gt;
+    &lt;i class=&quot;user icon&quot;&gt;&lt;/i&gt; Add Player
+  &lt;/a&gt;
+&lt;/section&gt;
+</code></pre>
+	  </section>
+	  <section data-tab="04" class="ui tab stacked moodle-book segment">
+	     <h1>Edit Player Controllers</h1>
+<p>First, we complete the <code>views/Players/editplayer.html</code> view:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Player Details' /}
+
+&lt;section class=&quot;ui raised form segment&quot;&gt;
+  &lt;form action=&quot;/players/changeplayer/${player.id}&quot; method=&quot;POST&quot;&gt;
+    &lt;div class=&quot;field&quot;&gt;
+      &lt;label&gt; Player Name &lt;/label&gt;
+      &lt;input type=&quot;text&quot; name=&quot;name&quot; value=${player.name}&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;field&quot;&gt;  
+      &lt;div class=&quot;ui selection dropdown&quot;&gt;
+        &lt;input type=&quot;hidden&quot; name=&quot;club&quot;&gt;
+        &lt;div class=&quot;default text&quot;&gt;${player.club.name}&lt;/div&gt;
+        &lt;i class=&quot;dropdown icon&quot;&gt;&lt;/i&gt;
+        &lt;div class=&quot;menu&quot;&gt;
+          #{list items:clubs, as:'club'}
+           &lt;div class=&quot;item&quot;&gt;${club.name}&lt;/div&gt;
+          #{/list}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;  
+    &lt;button class=&quot;ui blue submit button&quot;&gt;Change&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>With this in place, we can complete the <code>changePlayer</code> in the Players controller:</p>
+<pre><code class="java">  public static void changePlayer(Long id, String name, String club)
+  {
+    Player player = Player.findById(id);
+    Club theClub = Club.findByName(club);
+    Logger.info (&quot;CLub = &quot; + club);
+    player.name = name;
+    if (null != theClub)
+    {
+      Logger.info (&quot;changing club&quot;);
+      player.club.players.remove(player);
+      theClub.addPlayer(player);
+      player.club = theClub;
+      theClub.save();
+    }
+    player.save();
+    index();
+  }
+</code></pre>
+
+<p>You should now be able to edit a player, change his/her name and club.</p>
+	  </section>
+	  <section data-tab="Exercises" class="ui tab stacked moodle-book segment">
+	     <h1>Exercises</h1>
+<h2>Archive of the lab:</h2>
+<ul>
+<li><a href="archives/jpamodel-final.zip">jpamodel-final.zip</a></li>
+</ul>
+<h2>Exercise 1</h2>
+<p>Using this lab as a model, see if you can bring in ability to add / edit clubs, divisions and sponsors</p>
+	  </section>
+  <div class="ui fixed bottom borderless menu">'
+    <div class="ui small item"> 
+    <p id="footertext">
+    Prepared by  Eamonn de Leastar (edeleastar@wit.ie). Except where otherwise noted, this content is licensed under a  
+     <a  href="http://creativecommons.org/licenses/by-nc/4.0/" title="External link to http://creativecommons.org/licenses/by-nc/4.0/" 
+       target="_blank">Creative Commons Attribution-NonCommercial 4.0 License
+     </a>
+     </p>
+    </div>
+  </div>   
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-49703418-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>  </body>
+ </html>
