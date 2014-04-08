@@ -1,0 +1,544 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+   
+     <title> Lab-01 </title>
+   
+     <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+     <link rel="stylesheet" href="./style/semantic/css/semantic.min.css" type="text/css">  
+     <link rel="stylesheet" href="./style/custom/main.css" type="text/css"> 
+   
+     <script src="./style/custom/jquery-2.1.0.min.js"></script> 
+     <script src="./style/custom/jquery.address-1.6.min.js"></script>
+     <script src="./style/semantic/javascript/semantic.min.js"></script>
+   
+     <link rel="stylesheet" href="./style/highlight/school_book.css">
+     <script src="./style/highlight/highlight.pack.js"></script> 
+     <script>hljs.initHighlightingOnLoad();</script>
+   
+     <script src="./style/custom/common.js"> </script> 
+     <script src="./style/custom/main.js"> </script> 
+  </head>
+  <body>
+  <nav class="ui fixed top pointing borderless inverted menu">
+    <header class="header item"> <a href="../index.html">HTML5
+</a></header>
+    <div class="right tab-menu menu">
+          <a class="item" data-tab="Lab-01"> Lab-01 </a>
+          <a class="item" data-tab="01"> 01 </a>
+          <a class="item" data-tab="02"> 02 </a>
+          <a class="item" data-tab="03"> 03 </a>
+          <a class="item" data-tab="04"> 04 </a>
+          <a class="item" data-tab="05"> 05 </a>
+          <a class="item" data-tab="06"> 06 </a>
+          <a class="item" data-tab="07"> 07 </a>
+          <a class="item" data-tab="Exercises"> Exercises </a>
+    </div>
+  </nav>
+
+  <br>
+
+	  <section data-tab="Lab-01" class="ui tab stacked moodle-book segment">
+	     <h1>Objectives</h1>
+<ul>
+<li>Rediscover the main features of the Spacebook Play Application</li>
+<li>Introduce a new UI based on Semantic UI Framework</li>
+</ul>
+	  </section>
+	  <section data-tab="01" class="ui tab stacked moodle-book segment">
+	     <h1>spacebook-app</h1>
+<p>Have look at a running version of spacebook here:</p>
+<ul>
+<li><a href="http://spacebook-app-01.wit.cloudbees.net">http://spacebook-app-01.wit.cloudbees.net</a></li>
+</ul>
+<p>Register, log in and exercise the various features.</p>
+<p>Now download an unarchive the source project:</p>
+<ul>
+<li><a href="archives/spacebook-app.zip">spacebook-app.zip</a></li>
+</ul>
+<p>In order to import this, you will need to do the following commands:</p>
+<pre><code>cd 'the directory into which you unarchived the project'
+play deps
+play eclipsify
+</code></pre>
+
+<p>Then, in eclipse, import the project as an 'existing project'</p>
+<p>To run it :</p>
+<pre><code>play run
+</code></pre>
+
+<p>... and browse to:</p>
+<ul>
+<li><a href="http://localhost:9000">http://localhost:9000</a></li>
+</ul>
+<p>The app should operate the same as the online version above. However, note that there is no CSS.</p>
+<p>Verify this by viewing the source of the app in the browser. In particular, become familiar with the chrome developer tools. These are available in the 'Tools-&gt;Developer Tools Menu'. In particular, look at the <code>elements</code> tab in the tools console</p>
+	  </section>
+	  <section data-tab="02" class="ui tab stacked moodle-book segment">
+	     <h1>Semantic UI</h1>
+<p>Visit the home page of this open source CSS project:</p>
+<ul>
+<li><a href="http://semantic-ui.com">http://semantic-ui.com</a></li>
+</ul>
+<p>Download the project archive from the home page and extract. Its contents are structured something this:</p>
+<p><img alt="" src="img/01.png"></p>
+<p>Copy the 'packaged' folder into the <code>public</code> folder of your spaceboook-app. One in there, rename the folder 'packaged' to 'semantic':</p>
+<p>We also need to update the version of jquery we are using. Visit the following :</p>
+<ul>
+<li><a href="http://jquery.com/">http://jquery.com/</a></li>
+</ul>
+<p>You want to download the latest production version of jquery (2.0.3), and save it to  the <code>public/javascripts</code> folder of your spacebook-app project (there is already on older version in there)</p>
+<p>If all this goes correctly, the public folder of your project should look like this:</p>
+<p><img alt="" src="img/03.png"></p>
+<p>Now, open <code>app/view/main.html</code>, and replace its contents with the following:</p>
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;#{get 'title' /}&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;@{'/public/semantic/css/semantic.css'}&quot;&gt;
+    &lt;script src=&quot;@{'/public/javascripts/jquery-2.0.3.min.js'}&quot;&gt;&lt;/script&gt; 
+    &lt;script src=&quot;@{'/public/semantic/javascript/semantic.min.js'}&quot;&gt;&lt;/script&gt;   
+  &lt;/head&gt;    
+  &lt;body&gt;
+    #{doLayout /}
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>Run the app again. There should be differences in the UI yet.</p>
+	  </section>
+	  <section data-tab="03" class="ui tab stacked moodle-book segment">
+	     <h1>Menus</h1>
+<p>We can not make use of the Semantic UI menu feature. This is documented here:</p>
+<ul>
+<li><a href="http://semantic-ui.com/collections/menu.html">http://semantic-ui.com/collections/menu.html</a></li>
+</ul>
+<p>Here is a replacement for `views/accounts/index.html', which is the start page of our app:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Welcome to Spacebook' /}
+
+&lt;nav class=&quot;ui menu&quot;&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/signup&quot;&gt; Signup  &lt;/a&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/login&quot;&gt;  Login   &lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;p&gt; Signup or Log in to the Spacebook Service &lt;/p&gt;
+</code></pre>
+
+<p>We have just the menu section. Reload the home page, and you should see a menu instead of the bulleted list.</p>
+<p>Here is the menu section for `views/login.html':</p>
+<pre><code class="html">&lt;nav class=&quot;ui menu&quot;&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/signup&quot;&gt; Signup  &lt;/a&gt;
+  &lt;a class=&quot;active item&quot; href=&quot;/login&quot;&gt; Login &lt;/a&gt;
+&lt;/nav&gt;
+</code></pre>
+
+<p>and `views/signup.html':</p>
+<pre><code>&lt;nav class=&quot;ui menu&quot;&gt;
+  &lt;a class=&quot;active item&quot; href=&quot;/signup&quot;&gt; Signup  &lt;/a&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/login&quot;&gt; Login &lt;/a&gt;
+&lt;/nav&gt;
+</code></pre>
+
+<p>Look carefully at the differences between these two navigation bars.</p>
+<h2>Exercise</h2>
+<p>Using the above as a reference, replace the menu sections in:</p>
+<ul>
+<li>views/Home/index.html</li>
+<li>view/Members/index.html</li>
+<li>views/Profile/Members/index.html</li>
+</ul>
+<p>Such that the all follow the above style.</p>
+	  </section>
+	  <section data-tab="04" class="ui tab stacked moodle-book segment">
+	     <h1>Segments</h1>
+<p>We restructure all our pages now to use 'Segments':</p>
+<ul>
+<li><a href="http://semantic-ui.com/elements/segment.html">http://semantic-ui.com/elements/segment.html</a></li>
+</ul>
+<p>These allow us to group related content, and establish a baseline for some simple styling.</p>
+<p>Starting with `views/accounts.index.html', refactor as follows:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Welcome to Spacebook' /}
+
+&lt;nav class=&quot;ui menu&quot;&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/signup&quot;&gt; Signup  &lt;/a&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/login&quot;&gt;  Login   &lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;section class=&quot;ui segment&quot;&gt;
+  &lt;p&gt; Signup or Log in to the Spacebook Service &lt;/p&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Reload the page, and note the difference. There are a rang of variations in the segment :</p>
+<ul>
+<li><a href="http://semantic-ui.com/elements/segment.html">http://semantic-ui.com/elements/segment.html</a></li>
+</ul>
+<p>Try each of these in turn:</p>
+<pre><code class="html">&lt;section class=&quot;ui raised segment&quot;&gt;
+</code></pre>
+
+<pre><code class="html">&lt;section class=&quot;ui stacked segment&quot;&gt;
+</code></pre>
+
+<pre><code class="html">&lt;section class=&quot;ui piled segment&quot;&gt;
+</code></pre>
+
+<p>Until you find one you like</p>
+<h2>Exercise</h2>
+<p>For all of the views, encapsulate the main section (not the menu) in a segment styled to your choice.</p>
+<p>NB: Be sure to keep your indentation consistent! (2 spaces)</p>
+	  </section>
+	  <section data-tab="05" class="ui tab stacked moodle-book segment">
+	     <h1>Forms</h1>
+<p>Semantic provides simple and elegant form styles:</p>
+<ul>
+<li><a href="http://semantic-ui.com/collections/form.html">http://semantic-ui.com/collections/form.html</a></li>
+</ul>
+<p>These can be introduces into our pages gradually. Start with <code>login.html</code>, which currently should look like this:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Login to Spacebook' /}
+
+&lt;nav class=&quot;ui menu&quot;&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/signup&quot;&gt; Signup  &lt;/a&gt;
+  &lt;a class=&quot;active item&quot; href=&quot;/login&quot;&gt; Login &lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;section class=&quot;ui raised segment&quot;&gt;
+  &lt;form action=&quot;/authenticate&quot; method=&quot;POST&quot;&gt;
+    &lt;label&gt;  Username: &lt;/label&gt;
+    &lt;input type=&quot;text&quot; name=&quot;email&quot;&gt;
+    &lt;label&gt;  Password: &lt;/label&gt;
+    &lt;input type=&quot;password&quot; name=&quot;password&quot;&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;Login&quot; /&gt;
+  &lt;/form&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Add 'form' to the "ui raised segment" section like this:</p>
+<pre><code class="html">&lt;section class=&quot;ui raised form segment&quot;&gt;
+</code></pre>
+
+<p>and examine the effect. If you are unsure of the change, remove it again - look at the form, and then insert a second time.</p>
+<p>Now, wrap each of he separate 'fields' in a <code>&lt;div&gt;</code> like this for Username:</p>
+<pre><code class="html">    &lt;div class=&quot;field&quot;&gt;
+      &lt;label&gt;  Username: &lt;/label&gt;
+      &lt;input type=&quot;text&quot; name=&quot;email&quot;&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p>and this for password:</p>
+<pre><code class="html">    &lt;div class=&quot;field&quot;&gt;
+      &lt;label&gt;  Password: &lt;/label&gt;
+      &lt;input type=&quot;password&quot; name=&quot;password&quot;&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p>Reload the app and look at the difference.</p>
+<p>Finally, completely replace the submit button with the following:</p>
+<pre><code class="html">    &lt;button class=&quot;ui blue submit button&quot;&gt;Login&lt;/button&gt;
+</code></pre>
+
+<p>Reload the page. Its style should closely resemble the login form in the semantic ui documentation:</p>
+<ul>
+<li><a href="http://semantic-ui.com/collections/form.html">http://semantic-ui.com/collections/form.html</a></li>
+</ul>
+<p>Here is a complete version of login.html as it should be after the above steps:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Login to Spacebook' /}
+
+&lt;nav class=&quot;ui menu&quot;&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/signup&quot;&gt; Signup  &lt;/a&gt;
+  &lt;a class=&quot;active item&quot; href=&quot;/login&quot;&gt; Login &lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;section class=&quot;ui raised form segment&quot;&gt;
+  &lt;form action=&quot;/authenticate&quot; method=&quot;POST&quot;&gt;
+    &lt;div class=&quot;field&quot;&gt;
+      &lt;label&gt;  Username: &lt;/label&gt;
+      &lt;input type=&quot;text&quot; name=&quot;email&quot;&gt;
+    &lt;/div&gt;  
+    &lt;div class=&quot;field&quot;&gt;
+      &lt;label&gt;  Password: &lt;/label&gt;
+      &lt;input type=&quot;password&quot; name=&quot;password&quot;&gt;
+    &lt;/div&gt;
+    &lt;button class=&quot;ui blue submit button&quot;&gt;Login&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/section&gt;
+</code></pre>
+
+<h2>Exercises:</h2>
+<p>Using the above as a guide, and also other examples on the same form page on semantic:</p>
+<ul>
+<li><a href="http://semantic-ui.com/collections/form.html">http://semantic-ui.com/collections/form.html</a></li>
+</ul>
+<p>rework <code>signup.html</code> to have this same modern look and feel.</p>
+	  </section>
+	  <section data-tab="06" class="ui tab stacked moodle-book segment">
+	     <h1>Grid</h1>
+<p>This is the main section of the home page:</p>
+<pre><code class="html">&lt;section class=&quot;ui raised segment&quot;&gt;
+  &lt;h1&gt;${user.firstName} ${user.lastName}&lt;/h1&gt;
+  &lt;h4&gt;Friends (${user.friendships.size()})&lt;/h4&gt;
+  &lt;ul&gt; 
+    #{list items:user.friendships, as:'friendship'}
+      &lt;li&gt; 
+        &lt;a href=&quot;/publicprofile/${friendship.targetUser.id}&quot;&gt; ${friendship.targetUser.firstName} ${friendship.targetUser.lastName} 
+         (&lt;a href=&quot;/home/drop/${friendship.targetUser.id}&quot;&gt; drop &lt;/a&gt;)
+      &lt;/li&gt;
+    #{/list}
+  &lt;/ul&gt; 
+  &lt;h4&gt;Messages&lt;/h4&gt;
+  #{if user.inbox.size() &gt; 0}
+    &lt;ul&gt;
+      #{list items:user.inbox, as:'message'}
+         &lt;li&gt; ${message.from.firstName} says &quot;${message.messageText}&quot; &lt;/li&gt;
+      #{/list}
+    &lt;/ul&gt;
+  #{/if} 
+&lt;/section
+</code></pre>
+
+<p>It contains a list of friends + a list of messages. Ideally, these should be presented in 2 columns. Semantic UI provides the Grid component for this purpose:</p>
+<ul>
+<li><a href="http://semantic-ui.com/collections/grid.html">http://semantic-ui.com/collections/grid.html</a></li>
+</ul>
+<p>Here is a revision of the section above:</p>
+<pre><code class="html">&lt;section class=&quot;ui raised two column grid segment&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;column&quot;&gt;
+      &lt;h1&gt;${user.firstName} ${user.lastName}&lt;/h1&gt;
+      &lt;h4&gt;Friends (${user.friendships.size()})&lt;/h4&gt;
+      &lt;ul&gt; 
+        #{list items:user.friendships, as:'friendship'}
+          &lt;li&gt; 
+            &lt;a href=&quot;/publicprofile/${friendship.targetUser.id}&quot;&gt; ${friendship.targetUser.firstName} ${friendship.targetUser.lastName} 
+             (&lt;a href=&quot;/home/drop/${friendship.targetUser.id}&quot;&gt; drop &lt;/a&gt;)
+          &lt;/li&gt;
+        #{/list}
+      &lt;/ul&gt; 
+    &lt;/div&gt;
+    &lt;div class=&quot;column&quot;&gt;
+      &lt;h4&gt;Messages&lt;/h4&gt;
+      #{if user.inbox.size() &gt; 0}
+        &lt;ul&gt;
+          #{list items:user.inbox, as:'message'}
+             &lt;li&gt; ${message.from.firstName} says &quot;${message.messageText}&quot; &lt;/li&gt;
+          #{/list}
+        &lt;/ul&gt;
+      #{/if} 
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Note the superstructure introduced:</p>
+<pre><code class="html">&lt;section class=&quot;ui raised two column grid segment&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;column&quot;&gt;
+    ...
+    &lt;/div&gt;
+    &lt;div class=&quot;column&quot;&gt;
+    ...
+    &lt;/div&gt;
+  &lt;/row&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>This is the simplest configuration. There is a range of other examples and options demonstrated in the documentation:</p>
+<ul>
+<li><a href="http://semantic-ui.com/collections/grid.html">http://semantic-ui.com/collections/grid.html</a></li>
+</ul>
+<h2>Exercises:</h2>
+<p>Introduce two column layout into the Profile and PublicProfile views.</p>
+	  </section>
+	  <section data-tab="07" class="ui tab stacked moodle-book segment">
+	     <h1>Tuning</h1>
+<p>The semantic UI framework encapsulates a complete suit of UI components, which we have just scratched the surface of so far. However, the documentation is very accessible and clear. Here are some adjustments to make to the UI. For each change, make sure to immediately review its appearance in the running application.</p>
+<h2>Menu</h2>
+<p>Replace the menu in <code>accounts\index.html</code> with the following:</p>
+<pre><code class="html">&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;header class=&quot;header item&quot;&gt; Spacebook &lt;/header&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/signup&quot;&gt; Signup  &lt;/a&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/login&quot;&gt;  Login   &lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt; 
+</code></pre>
+
+<p>and review its appearance. Other options available here:</p>
+<ul>
+<li><a href="http://semantic-ui.com/collections/menu.html">http://semantic-ui.com/collections/menu.html</a></li>
+</ul>
+<h3>Exercise</h3>
+<p>Adjust all of the menu sections to follow this pattern</p>
+<h2>List</h2>
+<p>Review the Semantic UI Items:</p>
+<ul>
+<li><a href="http://semantic-ui.com/views/list.html">http://semantic-ui.com/views/list.html</a></li>
+</ul>
+<p>Examine the user list in <code>Members/index.html</code> again:</p>
+<pre><code class="html">&lt;section class=&quot;ui raised segment&quot;&gt;
+  &lt;ul&gt; 
+    #{list items:users, as:'user'}
+      &lt;li&gt; 
+        ${user.firstName} ${user.lastName}  &lt;a href=&quot;members/follow/${user.id}&quot;&gt; (follow) &lt;/a&gt; 
+      &lt;/li&gt;
+    #{/list}
+  &lt;/ul&gt; 
+&lt;/section&gt;
+</code></pre>
+
+<p>This can be restyled using the relevant Semantic UI classes:</p>
+<pre><code class="html">&lt;section class=&quot;ui raised segment&quot;&gt;
+  &lt;div class=&quot;ui list&quot;&gt; 
+    #{list items:users, as:'user'}
+      &lt;div class=&quot;item&quot;&gt; 
+        ${user.firstName} ${user.lastName}  &lt;a href=&quot;members/follow/${user.id}&quot;&gt; (follow) &lt;/a&gt; 
+      &lt;/div&gt;
+    #{/list}
+  &lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Review this in the app. Experiment with some alternatives. For instance, an icon can be introduced for each list item:</p>
+<ul>
+<li><a href="http://semantic-ui.com/elements/icon.html">http://semantic-ui.com/elements/icon.html</a></li>
+</ul>
+<p>Here is an example:</p>
+<pre><code class="html">&lt;section class=&quot;ui raised segment&quot;&gt;
+  &lt;div class=&quot;ui list&quot;&gt; 
+    #{list items:users, as:'user'}
+      &lt;div class=&quot;item&quot;&gt; 
+        &lt;i class=&quot;user icon&quot;&gt;&lt;/i&gt;
+        ${user.firstName} ${user.lastName}  &lt;a href=&quot;members/follow/${user.id}&quot;&gt; (follow) &lt;/a&gt; 
+      &lt;/div&gt;
+    #{/list}
+  &lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<h3>Exercise</h3>
+<p>Rework all the lists in the app to follow the above style. For the messages, use the <code>chat</code> icon:</p>
+<pre><code class="html">  &lt;i class=&quot;chat icon&quot;&gt;&lt;/i&gt;
+</code></pre>
+
+<h3>Segments and Headders</h3>
+<p>The headers:</p>
+<ul>
+<li><a href="http://semantic-ui.com/elements/header.html">http://semantic-ui.com/elements/header.html</a></li>
+</ul>
+<p>and segments:</p>
+<ul>
+<li><a href="http://semantic-ui.com/elements/segment.html">http://semantic-ui.com/elements/segment.html</a></li>
+</ul>
+<p>provide considerable further scope of delivering an attractive, coherent User Experience. Here is how some of the effects can be put to good use:</p>
+<p><img alt="" src="img/04.png"></p>
+<p>This is the main section of the Home page that produced the above:</p>
+<pre><code class="html">&lt;h1 class=&quot;ui inverted teal block header&quot; &gt;${user.firstName} ${user.lastName}&lt;/h1&gt;
+&lt;section class=&quot;ui two column grid segment&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;ui column&quot;&gt;
+      &lt;section class=&quot;ui stacked segment&quot;&gt;
+        &lt;h4 class=&quot;ui inverted red block header&quot;&gt;Friends (${user.friendships.size()})&lt;/h4&gt;
+        &lt;div class=&quot;ui list&quot;&gt; 
+          #{list items:user.friendships, as:'friendship'}
+            &lt;div class=&quot;ui item&quot;&gt; 
+              &lt;i class=&quot;user icon&quot;&gt;&lt;/i&gt;
+              &lt;a href=&quot;/publicprofile/${friendship.targetUser.id}&quot;&gt; ${friendship.targetUser.firstName} ${friendship.targetUser.lastName} &lt;/a&gt;
+               (&lt;a href=&quot;/home/drop/${friendship.targetUser.id}&quot;&gt; drop &lt;/a&gt;)
+            &lt;/div&gt;
+          #{/list}
+        &lt;/div&gt; 
+      &lt;/section&gt;  
+    &lt;/div&gt;
+    &lt;div class=&quot;column&quot;&gt;
+      &lt;section class=&quot;ui stacked segment&quot;&gt;
+        &lt;h4 class=&quot;ui inverted blue block header&quot;&gt;Messages&lt;/h4&gt;
+        #{if user.inbox.size() &gt; 0}
+          &lt;div class=&quot;ui list&quot;&gt; 
+            #{list items:user.inbox, as:'message'}
+              &lt;div class=&quot;item&quot;&gt; 
+                &lt;i class=&quot;chat icon&quot;&gt;&lt;/i&gt;
+                ${message.from.firstName} says &quot;${message.messageText}&quot; 
+              &lt;/div&gt;
+            #{/list}
+          &lt;/div&gt;
+        #{/if} 
+      &lt;/section&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Removing the templating language elements, and just focussing on the HTML, this is the structure:</p>
+<pre><code class="html">&lt;h1 class=&quot;ui inverted teal block header&quot; &gt;${user.firstName} ${user.lastName}&lt;/h1&gt;
+&lt;section class=&quot;ui two column grid segment&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;ui column&quot;&gt;
+        &lt;section class=&quot;ui stacked segment&quot;&gt;
+          &lt;h4 class=&quot;ui inverted red block header&quot;&gt;Friends (${user.friendships.size()})&lt;/h4&gt;
+          &lt;div class=&quot;ui list&quot;&gt; 
+           &lt;div class=&quot;ui item&quot;&gt; 
+              &lt;i class=&quot;user icon&quot;&gt;&lt;/i&gt;
+           &lt;/div&gt;
+          &lt;/div&gt; 
+        &lt;/section&gt;  
+    &lt;/div&gt;
+    &lt;div class=&quot;column&quot;&gt;
+      &lt;section class=&quot;ui stacked segment&quot;&gt;
+        &lt;h4 class=&quot;ui inverted blue block header&quot;&gt;Messages&lt;/h4&gt;
+          &lt;div class=&quot;ui list&quot;&gt; 
+            &lt;div class=&quot;item&quot;&gt; 
+                &lt;i class=&quot;chat icon&quot;&gt;&lt;/i&gt;
+             &lt;/div&gt;
+          &lt;/div&gt;
+      &lt;/section&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Read the Semantic UI Documentation on each of the features demonstrated above.</p>
+<h3>Exercise</h3>
+<p>Rework the Members, Profile and PublicProfile views to follow this style.</p>
+	  </section>
+	  <section data-tab="Exercises" class="ui tab stacked moodle-book segment">
+	     <h1>Exercises</h1>
+<p>Semantic has a Comment view:</p>
+<ul>
+<li><a href="http://semantic-ui.com/views/comment.html">http://semantic-ui.com/views/comment.html</a></li>
+</ul>
+<p>which elegantly represents a commenting panel.</p>
+<p>Rework the PublicProfile view such that the messages, and comment text area, are rendered using this view. Aim to have the view look something like this:</p>
+<p><img alt="" src="img/05.png"></p>
+	  </section>
+  <div class="ui fixed bottom borderless menu">'
+    <div class="ui small item"> 
+    <p id="footertext">
+    Prepared by  Eamonn de Leastar (edeleastar@wit.ie). Except where otherwise noted, this content is licensed under a  
+     <a  href="http://creativecommons.org/licenses/by-nc/4.0/" title="External link to http://creativecommons.org/licenses/by-nc/4.0/" 
+       target="_blank">Creative Commons Attribution-NonCommercial 4.0 License
+     </a>
+     </p>
+    </div>
+  </div>   
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-49703418-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>  </body>
+ </html>

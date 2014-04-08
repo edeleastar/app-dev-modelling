@@ -1,0 +1,425 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+   
+     <title> Lab-03 </title>
+   
+     <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+     <link rel="stylesheet" href="./style/semantic/css/semantic.min.css" type="text/css">  
+     <link rel="stylesheet" href="./style/custom/main.css" type="text/css"> 
+   
+     <script src="./style/custom/jquery-2.1.0.min.js"></script> 
+     <script src="./style/custom/jquery.address-1.6.min.js"></script>
+     <script src="./style/semantic/javascript/semantic.min.js"></script>
+   
+     <link rel="stylesheet" href="./style/highlight/school_book.css">
+     <script src="./style/highlight/highlight.pack.js"></script> 
+     <script>hljs.initHighlightingOnLoad();</script>
+   
+     <script src="./style/custom/common.js"> </script> 
+     <script src="./style/custom/main.js"> </script> 
+  </head>
+  <body>
+  <nav class="ui fixed top pointing borderless inverted menu">
+    <header class="header item"> <a href="../index.html">Solution
+</a></header>
+    <div class="right tab-menu menu">
+          <a class="item" data-tab="Lab-03"> Lab-03 </a>
+          <a class="item" data-tab="01"> 01 </a>
+          <a class="item" data-tab="02"> 02 </a>
+          <a class="item" data-tab="03"> 03 </a>
+          <a class="item" data-tab="04"> 04 </a>
+          <a class="item" data-tab="05"> 05 </a>
+          <a class="item" data-tab="Exercises"> Exercises </a>
+    </div>
+  </nav>
+
+  <br>
+
+	  <section data-tab="Lab-03" class="ui tab stacked moodle-book segment">
+	     <h1>Objectives</h1>
+<p>Implement the Assignment Stories 6 - 10.</p>
+	  </section>
+	  <section data-tab="01" class="ui tab stacked moodle-book segment">
+	     <h1>Reference implementation</h1>
+<p>Download the following project:</p>
+<ul>
+<li><a href="archives/spacebook-app-lab02-final.zip">spacebook-app-lab02-final.zip</a></li>
+</ul>
+<p>and import into your workspace. It is named 'spacebook-app-lab02-final' - so it will not interfere with your existing projects.</p>
+<p>Run the app, and verify its main features. Contrast it with your solution form the last lab.</p>
+<h2>Assignment Story 6</h2>
+<p>The Members page now shows a list of all members - including the currently logged in member. This clearly makes no sense and we should try to remove the current member from the list.</p>
+<p>HINT: This is the Members controller index method:</p>
+<pre><code class="java">  public static void index()
+  {
+    List&lt;User&gt; users = User.findAll();
+    render(users);
+  }
+</code></pre>
+
+<p>The challenge is to remove the current user from the users list before we send it to the view. Objects can be deleted from a list using the remove method:</p>
+<pre><code>   user.remove(currentUser);
+</code></pre>
+
+<p>How would you get a User object representing the current user? From the session of course - something like this perhaps:</p>
+<pre><code>    String userId = session.get(&quot;logged_in_userid&quot;);
+    User currentUser = User.findById(Long.parseLong(userId));
+</code></pre>
+
+<h2>Assignment Story 6 Solution</h2>
+<p>We just remove the current user from the list of users:</p>
+<pre><code class="java">  public static void index()
+  {
+    User user = Accounts.getLoggedInUser();
+    List&lt;User&gt; users = User.findAll();
+    users.remove(user);
+    render(users);
+  }
+</code></pre>
+	  </section>
+	  <section data-tab="02" class="ui tab stacked moodle-book segment">
+	     <h1>Assignment Story 7</h1>
+<p>In the members page - show each users name + their current status message.</p>
+<h2>Assignment Story 7 Solution</h2>
+<p>views/Members/index.html:</p>
+<pre><code class="html">      &lt;div class=&quot;ui item&quot;&gt; 
+        &lt;i class=&quot;user icon&quot;&gt;&lt;/i&gt;
+        ${user.firstName} ${user.lastName}: : ${user.statusText}  &lt;a href=&quot;members/follow/${user.id}&quot;&gt; (follow) &lt;/a&gt; 
+      &lt;/div&gt;
+</code></pre>
+	  </section>
+	  <section data-tab="03" class="ui tab stacked moodle-book segment">
+	     <h1>Assignment Story 8</h1>
+<p>On a users home profile, provide a way for two images to be uploaded - one will be their profile picture as currently implemented, the second is to be to be called the "thumbnail" image, which can be used in story 10 below.</p>
+<h2>Assignment Story 8 Solution</h2>
+<p>Introduce a new attribute into User.java:</p>
+<pre><code class="java">  public Blob   thumbnailPicture;
+</code></pre>
+
+<p>In HomeProfile controller, introduce methods to upload/download this thumbnail:</p>
+<pre><code class="java">  public static void getThumbnail(Long id) 
+  {
+    User user = User.findById(id);
+    Blob picture = user.thumbnailPicture;
+    if (picture.exists())
+    {
+      response.setContentTypeIfNotSet(picture.type());
+      renderBinary(picture.get());
+    }
+  }
+
+  public static void uploadThumbnail(Long id, Blob picture)
+  {
+    User user = User.findById(id);
+    user.thumbnailPicture = picture;
+    user.save();
+    index();
+  }  
+</code></pre>
+
+<p>Provide routing for these methods in routes.conf:</p>
+<pre><code>POST    /profile/uploadthumbnail/{id}           Profile.uploadThumbnail
+GET     /profile/getthumbnail/{id}              Profile.getThumbnail
+</code></pre>
+
+<p>Finally, adjust view/HomeProfile.index.html to display/upload the thumbnail image</p>
+<pre><code class="html">        &lt;div class=&quot;ui medium image&quot;&gt;
+          &lt;label class=&quot;ui ribbon label&quot;&gt;Thumbnail Image&lt;/label&gt;
+          &lt;img src=&quot;/profile/getthumbnail/${user.id}&quot;&gt;
+        &lt;/div&gt;
+        &lt;section class=&quot;ui raised form segment&quot;&gt;
+          &lt;form action=&quot;/profile/uploadthumbnail/${user.id}&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;     
+            &lt;div class=&quot;ui field&quot;&gt;
+              &lt;input type=&quot;file&quot; name=&quot;picture&quot;&gt;  &lt;/input&gt; 
+           &lt;/div&gt;     
+           &lt;button class=&quot;ui blue submit button&quot;&gt; Upload&lt;/button&gt;       
+          &lt;/form&gt;        
+        &lt;/section&gt;
+</code></pre>
+
+<p>Place the above below the current image upload panel.</p>
+	  </section>
+	  <section data-tab="04" class="ui tab stacked moodle-book segment">
+	     <h1>Assignment Story 9</h1>
+<p>In the messages displayed on the home page, show the message text (as currently) + a link to the senders profile. In this way users can easily navigate from a message directly to the sender, and perhaps leave a message.</p>
+<p>HINT:</p>
+<p>This is the list of members we are following:</p>
+<pre><code class="html">      &lt;ul&gt; 
+        #{list items:user.following, as:'user'}
+          &lt;li&gt; 
+            &lt;a href=&quot;userprofile/${user.id}&quot;&gt; ${user.firstName} ${user.lastName} &lt;/a&gt; : &lt;a href=&quot;home/drop/${user.id}&quot;&gt;Drop&lt;/a&gt;
+          &lt;/li&gt;
+        #{/list}
+      &lt;/ul&gt;
+</code></pre>
+
+<p>and this is the list of messages:</p>
+<pre><code class="html">      #{if usermessages.size() &gt; 0}
+        &lt;ul&gt;
+          #{list items:usermessages, as:'usermessage'}
+            &lt;li&gt; ${usermessage.from.firstName} says ${usermessage.messageText} &lt;/li&gt;
+          #{/list}
+       &lt;/ul&gt;
+      #{/if}
+</code></pre>
+
+<p>Your task would be to somehow turn this part of the message (before the 'says' string):</p>
+<pre><code class="html">            &lt;li&gt; ${usermessage.from.firstName} says ${usermessage.messageText} &lt;/li&gt;
+</code></pre>
+
+<p>into a link - similar to the link in the following list....</p>
+<h3>Assignment Story 9 Solution</h3>
+<p>In views/Home/index.html, we can change the messages item to look like the following:</p>
+<pre><code class="html">              &lt;div class=&quot;item&quot;&gt; 
+                &lt;i class=&quot;chat icon&quot;&gt;&lt;/i&gt;
+                 &lt;a href=&quot;/publicprofile/${message.from.id}&quot;&gt; ${message.from.firstName}&lt;/a&gt;  says &quot;${message.messageText}&quot; 
+              &lt;/div&gt;
+</code></pre>
+	  </section>
+	  <section data-tab="05" class="ui tab stacked moodle-book segment">
+	     <h1>Assignment Story 10</h1>
+<p>Turn the list of messages on the home page into a table - with three columns. One column for the message text, one for the senders name, and one showing the senders profile picture.</p>
+<p>HINT:</p>
+<p>Recall that in the UserProfile/visit.html page we are displaying images as follows:</p>
+<pre><code class="html">    &lt;p&gt; 
+      &lt;img src=&quot;/homeprofile/getpicture/${user.id}&quot;/&gt; 
+    &lt;/p&gt;
+</code></pre>
+
+<p>this same mechanism can be also used to display the images on the home page.</p>
+<h3>Assignment Story 10 Solution</h3>
+<p>The messages are displayed on the home page - views/Home/index.html. Open this and replace the 'Messages' section with the following:</p>
+<pre><code class="html">      &lt;section class=&quot;ui stacked segment&quot;&gt;
+        &lt;h4 class=&quot;ui inverted blue block header&quot;&gt;Messages&lt;/h4&gt;
+        #{if user.inbox.size() &gt; 0}
+          &lt;table class=&quot;ui table segment&quot;&gt;
+            &lt;thead&gt;
+              &lt;tr&gt;
+                &lt;th&gt;From&lt;/th&gt;
+                &lt;th&gt;&lt;/th&gt;
+                &lt;th&gt;Message&lt;/th&gt;
+              &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+              #{list items:user.inbox, as:'message'}
+                &lt;tr&gt;
+                  &lt;td&gt;
+                    &lt;div class=&quot;ui small image&quot;&gt;
+                      &lt;img src=&quot;/profile/getthumbnail/${message.from.id}&quot;&gt;
+                    &lt;/div&gt;
+                  &lt;/td&gt;
+                  &lt;td&gt;
+                     &lt;a href=&quot;/publicprofile/${message.from.id}&quot;&gt; ${message.from.firstName}&lt;/a&gt;
+                   &lt;/td&gt;
+                   &lt;td&gt; 
+                      ${message.messageText}
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+              #{/list}
+            &lt;/tbody&gt;
+          &lt;/table&gt;  
+        #{/if} 
+      &lt;/section&gt;
+</code></pre>
+
+<p>You must have images loaded for the fiends who have left messages.</p>
+	  </section>
+	  <section data-tab="Exercises" class="ui tab stacked moodle-book segment">
+	     <h1>Exercises</h1>
+<h2>Solution so far:</h2>
+<p>Compare your project with this one, which has all of the exercises implemented so far:</p>
+<ul>
+<li><a href="archives/spacebook-app-lab03.zip">spacebook-app-lab03.zip</a></li>
+</ul>
+<p>You can safely import it into your project, as it has been renamed.</p>
+<h2>Exercise 1: Cloudbees</h2>
+<p>Now deploy the project to cloudbees. </p>
+<h2>Exercise 2: Decompose Views into Components</h2>
+<p>Explore the possibility of breaking the view into segments - and hence simplifying the more complicated views.</p>
+<p>For instance, this is <code>home/index.html</code>:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Home' /}
+
+&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;header class=&quot;header item&quot;&gt; Spacebook &lt;/header&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    &lt;a class=&quot;active item&quot; href=&quot;/home&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/members&quot;&gt;Members&lt;/a&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/profile&quot;&gt;Profile&lt;/a&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/logout&quot;&gt;Logout&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt; 
+
+&lt;h1 class=&quot;ui inverted teal block header&quot; &gt;${user.firstName} ${user.lastName}&lt;/h1&gt;
+&lt;section class=&quot;ui two column grid segment&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;ui column&quot;&gt;
+      &lt;section class=&quot;ui stacked segment&quot;&gt;
+        &lt;h4 class=&quot;ui inverted red block header&quot;&gt;Friends (${user.friendships.size()})&lt;/h4&gt;
+        &lt;div class=&quot;ui list&quot;&gt; 
+          #{list items:user.friendships, as:'friendship'}
+            &lt;div class=&quot;ui item&quot;&gt; 
+              &lt;i class=&quot;user icon&quot;&gt;&lt;/i&gt;
+              &lt;a href=&quot;/publicprofile/${friendship.targetUser.id}&quot;&gt; ${friendship.targetUser.firstName} ${friendship.targetUser.lastName} &lt;/a&gt;
+               (&lt;a href=&quot;/home/drop/${friendship.targetUser.id}&quot;&gt; drop &lt;/a&gt;)
+            &lt;/div&gt;
+          #{/list}
+        &lt;/div&gt; 
+      &lt;/section&gt;  
+    &lt;/div&gt;
+    &lt;div class=&quot;column&quot;&gt;
+      &lt;section class=&quot;ui stacked segment&quot;&gt;
+        &lt;h4 class=&quot;ui inverted blue block header&quot;&gt;Messages&lt;/h4&gt;
+        #{if user.inbox.size() &gt; 0}
+          &lt;table class=&quot;ui table segment&quot;&gt;
+            &lt;thead&gt;
+              &lt;tr&gt;
+                &lt;th&gt;From&lt;/th&gt;
+                &lt;th&gt;&lt;/th&gt;
+                &lt;th&gt;Message&lt;/th&gt;
+              &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+              #{list items:user.inbox, as:'message'}
+                &lt;tr&gt;
+                  &lt;td&gt;
+                    &lt;div class=&quot;ui small image&quot;&gt;
+                      &lt;img src=&quot;/profile/getpicture/${message.from.id}&quot;&gt;
+                    &lt;/div&gt;
+                  &lt;/td&gt;
+                  &lt;td&gt;
+                     &lt;a href=&quot;/publicprofile/${message.from.id}&quot;&gt; ${message.from.firstName}&lt;/a&gt;
+                   &lt;/td&gt;
+                   &lt;td&gt; 
+                      ${message.messageText}
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+              #{/list}
+            &lt;/tbody&gt;
+          &lt;/table&gt;  
+        #{/if} 
+      &lt;/section&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Large and complicated, and very easy to make mistakes with this level of nesting / indentation. We could break it up into smaller pieces. </p>
+<p>For instance - create a new folder in views called <code>components</code>. In this folder, create two new views:</p>
+<h3>frields.html</h3>
+<pre><code class="html"> &lt;section class=&quot;ui stacked segment&quot;&gt;
+   &lt;h4 class=&quot;ui inverted red block header&quot;&gt;Friends (${user.friendships.size()})&lt;/h4&gt;
+   &lt;div class=&quot;ui list&quot;&gt; 
+     #{list items:user.friendships, as:'friendship'}
+       &lt;div class=&quot;ui item&quot;&gt; 
+         &lt;i class=&quot;user icon&quot;&gt;&lt;/i&gt;
+         &lt;a href=&quot;/publicprofile/${friendship.targetUser.id}&quot;&gt; ${friendship.targetUser.firstName} ${friendship.targetUser.lastName} &lt;/a&gt;
+          (&lt;a href=&quot;/home/drop/${friendship.targetUser.id}&quot;&gt; drop &lt;/a&gt;)
+       &lt;/div&gt;
+     #{/list}
+   &lt;/div&gt; 
+ &lt;/section&gt;  
+</code></pre>
+
+<h3>message.html</h3>
+<pre><code class="html"> &lt;section class=&quot;ui stacked segment&quot;&gt;
+   &lt;h4 class=&quot;ui inverted blue block header&quot;&gt;Messages&lt;/h4&gt;
+   #{if user.inbox.size() &gt; 0}
+     &lt;table class=&quot;ui table segment&quot;&gt;
+       &lt;thead&gt;
+         &lt;tr&gt;
+           &lt;th&gt;From&lt;/th&gt;
+           &lt;th&gt;&lt;/th&gt;
+           &lt;th&gt;Message&lt;/th&gt;
+         &lt;/tr&gt;
+       &lt;/thead&gt;
+       &lt;tbody&gt;
+         #{list items:user.inbox, as:'message'}
+           &lt;tr&gt;
+             &lt;td&gt;
+               &lt;div class=&quot;ui small image&quot;&gt;
+                 &lt;img src=&quot;/profile/getpicture/${message.from.id}&quot;&gt;
+               &lt;/div&gt;
+             &lt;/td&gt;
+             &lt;td&gt;
+                &lt;a href=&quot;/publicprofile/${message.from.id}&quot;&gt; ${message.from.firstName}&lt;/a&gt;
+              &lt;/td&gt;
+              &lt;td&gt; 
+                 ${message.messageText}
+               &lt;/td&gt;
+           &lt;/tr&gt;
+         #{/list}
+       &lt;/tbody&gt;
+     &lt;/table&gt;  
+   #{/if} 
+ &lt;/section&gt;
+</code></pre>
+
+<p>Note that the above contain sections taken directly from <code>home/index.html</code>.</p>
+<p>Now, replace <code>home/index.html</code> with the following:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Home' /}
+
+&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;header class=&quot;header item&quot;&gt; Spacebook &lt;/header&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    &lt;a class=&quot;active item&quot; href=&quot;/home&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/members&quot;&gt;Members&lt;/a&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/profile&quot;&gt;Profile&lt;/a&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/logout&quot;&gt;Logout&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt; 
+
+&lt;h1 class=&quot;ui inverted teal block header&quot; &gt;${user.firstName} ${user.lastName}&lt;/h1&gt;
+&lt;section class=&quot;ui two column grid segment&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;ui column&quot;&gt;
+      #{include &quot;components/friends.html&quot; /} 
+    &lt;/div&gt;
+    &lt;div class=&quot;column&quot;&gt;
+      #{include &quot;components/messages.html&quot; /} 
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>This is considerably easier to read and manage.</p>
+<h2>Exercise 3: More Decomposed Components</h2>
+<p>Can you see opportunities for further <code>components</code> in the views? Profile/index.html and PublicProfile/index.html are both large an complicated views. Can you use the above techniques to split these up into components making them easier to manage?</p>
+<h2>Exercise 4: Recompose Components</h2>
+<p>Are there now opportunities for re-composing components into new views? For instance, a 'dashboard' view, which might contain:</p>
+<ul>
+<li>members list</li>
+<li>friends list</li>
+<li>list of messages</li>
+<li>Status update panel</li>
+</ul>
+	  </section>
+  <div class="ui fixed bottom borderless menu">'
+    <div class="ui small item"> 
+    <p id="footertext">
+    Prepared by  Eamonn de Leastar (edeleastar@wit.ie). Except where otherwise noted, this content is licensed under a  
+     <a  href="http://creativecommons.org/licenses/by-nc/4.0/" title="External link to http://creativecommons.org/licenses/by-nc/4.0/" 
+       target="_blank">Creative Commons Attribution-NonCommercial 4.0 License
+     </a>
+     </p>
+    </div>
+  </div>   
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-49703418-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>  </body>
+ </html>

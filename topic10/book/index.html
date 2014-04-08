@@ -1,0 +1,858 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+   
+     <title> Lab-10 </title>
+   
+     <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+     <link rel="stylesheet" href="./style/semantic/css/semantic.min.css" type="text/css">  
+     <link rel="stylesheet" href="./style/custom/main.css" type="text/css"> 
+   
+     <script src="./style/custom/jquery-2.1.0.min.js"></script> 
+     <script src="./style/custom/jquery.address-1.6.min.js"></script>
+     <script src="./style/semantic/javascript/semantic.min.js"></script>
+   
+     <link rel="stylesheet" href="./style/highlight/school_book.css">
+     <script src="./style/highlight/highlight.pack.js"></script> 
+     <script>hljs.initHighlightingOnLoad();</script>
+   
+     <script src="./style/custom/common.js"> </script> 
+     <script src="./style/custom/main.js"> </script> 
+  </head>
+  <body>
+  <nav class="ui fixed top pointing borderless inverted menu">
+    <header class="header item"> <a href="../index.html">Tags
+</a></header>
+    <div class="right tab-menu menu">
+          <a class="item" data-tab="Lab-10"> Lab-10 </a>
+          <a class="item" data-tab="01"> 01 </a>
+          <a class="item" data-tab="02"> 02 </a>
+          <a class="item" data-tab="03"> 03 </a>
+          <a class="item" data-tab="04"> 04 </a>
+          <a class="item" data-tab="05"> 05 </a>
+          <a class="item" data-tab="06"> 06 </a>
+          <a class="item" data-tab="07"> 07 </a>
+          <a class="item" data-tab="08"> 08 </a>
+          <a class="item" data-tab="09"> 09 </a>
+          <a class="item" data-tab="10"> 10 </a>
+          <a class="item" data-tab="Exercises"> Exercises </a>
+    </div>
+  </nav>
+
+  <br>
+
+	  <section data-tab="Lab-10" class="ui tab stacked moodle-book segment">
+	     <h1>Objectives</h1>
+<ul>
+<li>Implement a solution to assignment 1 incorporating:<ul>
+<li>revised approach to active menu tracking</li>
+<li>introduce <code>tags</code> as an alternative to  <code>components</code></li>
+</ul>
+</li>
+<li>Augment with a number of other solutions to the same assignment</li>
+</ul>
+	  </section>
+	  <section data-tab="01" class="ui tab stacked moodle-book segment">
+	     <h1>Story 1</h1>
+<p>The starting point for this lab is the final version of lab 5:</p>
+<ul>
+<li><a href="archives/spacebook-app-lab05-complete.zip">spacebook-app-lab05-complete.zip</a></li>
+</ul>
+<h2>Story</h2>
+<p>This assignment must be submitted as a url for a cloudbees hosted version of the project. If you are unsure about deployment, have mislaid your keys or generally failed to deploy to date, then this must be tackled immediately.</p>
+<p>The labs from Web Development are still online - and you can go though those if necessary. You can also seek help in the labs on Fridays.</p>
+	  </section>
+	  <section data-tab="02" class="ui tab stacked moodle-book segment">
+	     <h1>Story 2</h1>
+<h2>Problem</h2>
+<p>In the current version - and 'edit profile’ button appears on the profile page. When opened, this page has no navigation bars, just a 'save' button, which takes you back to the profile view.</p>
+<p>Change this such that a new menuitem appears on the menu bar - perhaps on the extreme right. It should perhaps be renamed 'account settings'. This menu will enable the account setting to be edited as currently implemented. However, the menu bar should remain on screen.</p>
+<h2>Solution 1</h2>
+<p>This is a revised menu structure:</p>
+<pre><code class="html">&lt;nav class=&quot;ui inverted main menu&quot;&gt;
+  &lt;div class=&quot;title item&quot;&gt; Spacebook &lt;/div&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/home&quot;&gt;Home&lt;/a&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/members&quot;&gt;Members&lt;/a&gt;
+  &lt;a class=&quot;item&quot; href=&quot;/profile&quot;&gt;Profile&lt;/a&gt;
+  &lt;a class=&quot;active item&quot; href=&quot;/blog&quot;&gt;Blog&lt;/a&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    &lt;div class=&quot;ui dropdown item&quot;&gt;
+      &lt;i class=&quot;user icon&quot;&gt;&lt;/i&gt;
+      &lt;div class=&quot;menu&quot;&gt;
+        &lt;a class=&quot;item&quot; href=&quot;/editprofile&quot;&gt;Settings&lt;/a&gt;  
+        &lt;a class=&quot;item&quot; href=&quot;/logout&quot;&gt;Logout&lt;/a&gt; 
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/nav&gt; 
+</code></pre>
+
+<p>Try it out on just one of the views - say the blog view . </p>
+<p>You should notice that it does not work. This is because it is useing a 'dropdown' control, which needs to be specifically enabled.</p>
+<p>Do this by changing views/main.html - changing the body as follows:</p>
+<pre><code class="html">  &lt;body&gt;
+    #{doLayout /}  
+    &lt;script&gt;
+      $('.ui.dropdown').dropdown();
+    &lt;/script&gt;
+  &lt;/body&gt;
+</code></pre>
+
+<p>In the above, we have an extra <code>&lt;script&gt;</code> tag, which primes the dropdown control.</p>
+<p>Test again now, and it should work.</p>
+<h2>Solution 2</h2>
+<p>We have only got our new option working on a single view. We could start the process of copying / pasting this into every view, which is rather tedious.</p>
+<p>It would be better if we can have the menu in a single place. In views, create a new folder called <code>tags</code>. Inside this folder, create a new file called <code>mainmenu.html</code>. Paste in the following contents:</p>
+<pre><code class="html">&lt;nav class=&quot;ui inverted main menu&quot;&gt;
+  &lt;div class=&quot;title item&quot;&gt; Spacebook &lt;/div&gt;
+  &lt;a id=&quot;home&quot;    class=&quot;item&quot; href=&quot;/home&quot;&gt;Home&lt;/a&gt;
+  &lt;a id=&quot;members&quot; class=&quot;item&quot; href=&quot;/members&quot;&gt;Members&lt;/a&gt;
+  &lt;a id=&quot;profile&quot; class=&quot;item&quot; href=&quot;/profile&quot;&gt;Profile&lt;/a&gt;
+  &lt;a id=&quot;blog&quot;    class=&quot;item&quot; href=&quot;/blog&quot;&gt;Blog&lt;/a&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    &lt;div class=&quot;ui dropdown item&quot;&gt;
+      &lt;i class=&quot;user icon&quot;&gt;&lt;/i&gt;
+      &lt;div class=&quot;menu&quot;&gt;
+        &lt;a class=&quot;item&quot; href=&quot;/editprofile&quot;&gt;Settings&lt;/a&gt;  
+        &lt;a class=&quot;item&quot; href=&quot;/logout&quot;&gt;Logout&lt;/a&gt; 
+      &lt;/div&gt;
+    &lt;/div&gt;  
+   &lt;/div&gt; 
+&lt;/nav&gt; 
+
+&lt;script&gt;
+  $(&quot;#${_id}&quot;).addClass(&quot;active item&quot;);
+&lt;/script&gt;
+</code></pre>
+
+<p>Now, back in your blog view, completely replace the existing menu with the following single line:</p>
+<pre><code class="html">#{mainmenu id:&quot;blog&quot;/}
+</code></pre>
+
+<p>Test this - and verify it works as expected.</p>
+<p>Now you can replace the menu on all of the views with new 'tag' we are using above, with a different id for each as appropriate.</p>
+<pre><code class="html">#{mainmenu id:&quot;home&quot;/}
+...
+#{mainmenu id:&quot;members&quot;/}
+...
+#{mainmenu id:&quot;profile&quot;/}
+...
+#{mainmenu id:&quot;blog&quot;/}
+</code></pre>
+
+<p>This solution uses custom tags feature, which is the ability to write our own tags. We will discuss this further in class.</p>
+	  </section>
+	  <section data-tab="03" class="ui tab stacked moodle-book segment">
+	     <h1>Story 3: New Loook and Feel</h1>
+<h2>Problem</h2>
+<p>Redesign the UI with different choices for:</p>
+<ul>
+<li>Colour Scheme</li>
+<li>Layout of each view </li>
+<li>Menu Style</li>
+</ul>
+<p>For inspiration, download the semantic ui archive again, and explore the ‘examples’ directory.</p>
+<h2>Solution</h2>
+<p>There are yet to be developed a range of good examples for SemanticUI. See discussion here:</p>
+<ul>
+<li><a href="https://github.com/semantic-org/Semantic-UI/issues/206">https://github.com/semantic-org/Semantic-UI/issues/206</a></li>
+</ul>
+<p>As soon as they are ready, they might start to appear here:</p>
+<ul>
+<li><a href="https://github.com/Semantic-Org/Learn-Semantic">https://github.com/Semantic-Org/Learn-Semantic</a></li>
+</ul>
+<p>In the meantime, this looks like the most ambitious use of the framework:</p>
+<ul>
+<li><a href="http://www.quirky.com">http://www.quirky.com</a></li>
+</ul>
+<p>You might be able to inspect the source there and get some ideas / see what is possible.</p>
+	  </section>
+	  <section data-tab="04" class="ui tab stacked moodle-book segment">
+	     <h1>Story 4: Revised Home Page</h1>
+<h2>Problem</h2>
+<p>The Home page is to be revised as follows:</p>
+<ul>
+<li>Allow a users status text to be changed</li>
+<li>All a users profile (main) images to be changed</li>
+</ul>
+<h2>Solution</h2>
+<p>The simplest solution might be to include two of the 'components' directly into the home view, as another row:</p>
+<pre><code class="html">&lt;h1 class=&quot;ui inverted teal block header&quot; &gt;${user.firstName} ${user.lastName}&lt;/h1&gt;
+&lt;section class=&quot;ui two column grid segment&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;ui column&quot;&gt;
+      #{include &quot;components/friends.html&quot; /} 
+    &lt;/div&gt;
+    &lt;div class=&quot;column&quot;&gt;
+      #{include &quot;components/messages.html&quot; /} 
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;column&quot;&gt;
+      #{include &quot;components/statusupdate.html&quot; /} 
+    &lt;/div&gt;   
+    &lt;div class=&quot;column&quot;&gt;
+      #{include &quot;components/profileimages.html&quot; /} 
+    &lt;/div&gt; 
+  &lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>This suffers from two drawbacks:</p>
+<ul>
+<li>Issue 1: When the status is updated, the user is switched to the profile view</li>
+<li>Issue 2: Both images can be changed, the spec requested a single image only.</li>
+</ul>
+<h3>Issue 1:</h3>
+<p>Duplicate the <code>changeStatus</code> action in the Home controller:</p>
+<pre><code class="java">  public static void changeStatus(String statusText)
+  {
+    User user = Accounts.getLoggedInUser();
+    user.statusText = statusText;
+    user.save();
+    Logger.info(&quot;Status changed to &quot; + statusText);
+    index();
+  }
+</code></pre>
+
+<p>Create a new route to direct to this action:</p>
+<pre><code>POST    /home/changestatus                      Homee.changeStatus
+</code></pre>
+
+<p>Create a new file called <code>statusupdate.html</code> in the <code>views/tags</code> folder, and paste in the following:</p>
+<pre><code class="html">&lt;section class=&quot;ui stacked segment&quot;&gt;
+  &lt;h4 class=&quot;ui inverted red block header&quot;&gt; Status&lt;/h4&gt;
+  &lt;div class=&quot;ui message&quot;&gt;
+    &lt;p&gt; ${_status} &lt;/p&gt;
+  &lt;/div&gt;
+   &lt;section class=&quot;ui form segment&quot;&gt;
+    &lt;form action=&quot;${_route}&quot; method=&quot;POST&quot;&gt;
+      &lt;div class=&quot;field&quot;&gt;
+        &lt;textarea name=&quot;statusText&quot;&gt;&lt;/textarea&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;ui button teal submit labeled icon&quot;&gt;&lt;i class=&quot;icon edit&quot;&gt;&lt;/i&gt; Update &lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/section&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Back in the <code>views/home.html</code>, replace this include:</p>
+<pre><code class="html">    &lt;div class=&quot;column&quot;&gt;
+      #{include &quot;components/statusupdate.html&quot; /} 
+    &lt;/div&gt;   
+</code></pre>
+
+<p>with this:</p>
+<pre><code class="html">    &lt;div class=&quot;column&quot;&gt;
+      #{statusupdate route:&quot;/home/changestatus&quot;, status:&quot;${user.statusText}&quot; /} 
+    &lt;/div&gt; 
+</code></pre>
+
+<p>This is quite sophisticated, but represents best practice in building server side template.</p>
+<h3>Issue 2:</h3>
+<p>We can take the same approach. First, duplicate this method in Home:</p>
+<pre><code class="java">  public static void uploadPicture(Long id, Blob picture)
+  {
+    User user = User.findById(id);
+    user.profilePicture = picture;
+    user.save();
+    Logger.info(&quot;saving picture&quot;);
+    index();
+  } 
+</code></pre>
+
+<p>This new route:</p>
+<pre><code>POST    /home/uploadpicture/{id}                Home.uploadPicture
+</code></pre>
+
+<p>Create a new file called <code>profileimage.html</code> in the views/tags folder:</p>
+<pre><code>&lt;section&gt;
+  &lt;div class=&quot;ui medium image&quot;&gt;
+    &lt;label class=&quot;ui ribbon label&quot;&gt;Profile Image&lt;/label&gt;
+    &lt;img src=&quot;${_image}&quot;&gt;
+  &lt;/div&gt;  
+  &lt;section class=&quot;ui raised form segment&quot;&gt;
+    &lt;form action=&quot;${_route}&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;     
+      &lt;div class=&quot;ui field&quot;&gt;
+        &lt;input type=&quot;file&quot; name=&quot;picture&quot;&gt;  &lt;/input&gt; 
+     &lt;/div&gt;     
+     &lt;button class=&quot;ui blue submit button&quot;&gt; Upload&lt;/button&gt;       
+    &lt;/form&gt;        
+  &lt;/section&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>We should now include this in the <code>home/index.html</code> file:</p>
+<pre><code class="html">    &lt;div class=&quot;column&quot;&gt;
+      #{profileimage route:&quot;/home/uploadpicture/${user.id}&quot;, image:&quot;/profile/getpicture/${user.id}&quot; /} 
+    &lt;/div&gt; 
+</code></pre>
+
+<p>See if you can understand the flow of information in the above, particularly the paramaters passed to <code>profileimage.html</code> from <code>home/index.html</code>.</p>
+<h1>Further Exercise</h1>
+<p>See if you can now refactor the <code>profile/index.html</code> to follow the above pattern.</p>
+	  </section>
+	  <section data-tab="05" class="ui tab stacked moodle-book segment">
+	     <h1>Story 5: User Logged in Status</h1>
+<h2>Problem</h2>
+<p>The home page currently displays a list of message from other users in a table.</p>
+<ul>
+<li>Extend this table to include one extra column to contain some suitable icon or text</li>
+<li>This column should indicate whether the user is online or not (i.e. has logged in, but not logged out).</li>
+<li>Provide a similar feature on the Members page</li>
+</ul>
+<h2>Solution</h2>
+<p>Introduce a new field into user:</p>
+<pre><code class="java">  public boolean online;
+</code></pre>
+
+<p>In Accounts controller - set to <code>true</code> when user logs in:</p>
+<pre><code class="java">    if ((user != null) &amp;&amp; (user.checkPassword(password) == true))
+    {
+      Logger.info(&quot;Authentication successful&quot;);
+      session.put(&quot;logged_in_userid&quot;, user.id);
+      user.online = true;
+      user.save();
+      Home.index();
+    }
+</code></pre>
+
+<p>... and <code>false</code> when he/she logs out:</p>
+<pre><code class="java">  public static void logout()
+  {
+    String userId = session.get(&quot;logged_in_userid&quot;);
+    User user = User.findById(Long.parseLong(userId));
+    user.online = false;
+    user.save();
+    session.clear();
+    index();
+  }
+</code></pre>
+
+<p>This is a new version of the members page which makes use of the online member of user:</p>
+<pre><code>&lt;section class=&quot;ui stacked segment&quot;&gt;
+  &lt;div class=&quot;ui list&quot;&gt; 
+    #{list items:users, as:'user'}
+      &lt;div class=&quot;ui item&quot;&gt; 
+        #{if user.online}
+          &lt;i class=&quot;user green icon&quot;&gt;&lt;/i&gt;
+        #{/if}
+        #{else}
+          &lt;i class=&quot;user red icon&quot;&gt;&lt;/i&gt;
+        #{/else}
+        ${user.firstName} ${user.lastName}: : ${user.statusText}  &lt;a href=&quot;members/follow/${user.id}&quot;&gt; (follow) &lt;/a&gt; 
+      &lt;/div&gt;
+    #{/list}
+  &lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>Here is a new version of <code>friends.html</code> to keep the home page updated with user status:</p>
+<pre><code class="html">&lt;section class=&quot;ui stacked segment&quot;&gt;
+  &lt;h4 class=&quot;ui inverted red block header&quot;&gt;Friends (${user.friendships.size()})&lt;/h4&gt;
+  &lt;div class=&quot;ui list&quot;&gt; 
+    #{list items:user.friendships, as:'friendship'}
+      &lt;div class=&quot;ui item&quot;&gt; 
+        #{if friendship.targetUser.online}
+          &lt;i class=&quot;user green icon&quot;&gt;&lt;/i&gt;
+        #{/if}
+        #{else}
+          &lt;i class=&quot;user red icon&quot;&gt;&lt;/i&gt;
+        #{/else}
+        &lt;a href=&quot;/publicprofile/${friendship.targetUser.id}&quot;&gt; ${friendship.targetUser.firstName} ${friendship.targetUser.lastName} &lt;/a&gt;
+         (&lt;a href=&quot;/home/drop/${friendship.targetUser.id}&quot;&gt; drop &lt;/a&gt;)
+      &lt;/div&gt;
+    #{/list}
+  &lt;/div&gt; 
+&lt;/section&gt; 
+</code></pre>
+
+<p>Note that the above solution is a major flaw. If the user does not log out, and just exits the browser, then he/she will still be registered as 'logged in'.</p>
+<p>We really need a solution that has some form of timeout, setting the user to logged out if a certain amount of time without activity has elapsed.</p>
+	  </section>
+	  <section data-tab="06" class="ui tab stacked moodle-book segment">
+	     <h1>Story 6: Basic Blog</h1>
+<h2>Problem</h2>
+<p>Each user is now to also have a blog. This will appear on a separate tab. </p>
+<p>A blog it to provide a facility to enable the user to create a post. </p>
+<p>A post is just any text the user may enter. </p>
+<p>This post is to be listed in reverse chronological order on the blob page (newest first)</p>
+<h2>Solution</h2>
+<p>Already implemented in the base version of this lab.</p>
+	  </section>
+	  <section data-tab="07" class="ui tab stacked moodle-book segment">
+	     <h1>Story 7: Basic blog with Comments</h1>
+<h2>Problem</h2>
+<p>For each post, a button should enable a user to leave a comment. </p>
+<p>The comments should appear under any given post, and should include the name and the user who left the comment + the date.</p>
+<h2>Solution</h2>
+<p>New model for a Comment:</p>
+<pre><code class="java">package models;
+
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+
+import play.db.jpa.Model;
+
+@Entity
+public class Comment extends Model
+{
+  @Lob
+  public String content;
+
+  public Comment(String content)
+  {
+    this.content = content;
+  }
+}
+</code></pre>
+
+<p>New entry in Post model:</p>
+<pre><code class="java">  @OneToMany (cascade=CascadeType.ALL)
+  public List&lt;Comment&gt; comments = new ArrayList&lt;Comment&gt;();
+</code></pre>
+
+<p>New action in the BlogPost controller:</p>
+<pre><code class="java">  public static void newComment(Long postid, String content)
+  {    
+    Logger.info(&quot;Post ID = &quot; + postid);
+    Post post = Post.findById(postid);
+    Comment comment = new Comment(content);    
+    post.comments.add(comment);
+    post.save();
+    view(postid);
+  } 
+</code></pre>
+
+<p>with a matching route for this action:</p>
+<pre><code>POST  /blogpost/comment/{postid}                BlogPost.newComment
+</code></pre>
+
+<p>The blogpost view then is extended to support comments:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Blog' /}
+
+&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;header class=&quot;header item&quot;&gt; Spacebook &lt;/header&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    &lt;a class=&quot;active item&quot; href=&quot;/blog&quot;&gt;Blog&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt; 
+
+&lt;section class=&quot;ui stacked segment&quot;&gt;
+  &lt;h5 class=&quot;ui inverted green block header&quot;&gt; ${post.title}&lt;/h5&gt;
+  &lt;p&gt; 
+    ${post.content}:
+  &lt;/p&gt;
+  &lt;a href=&quot;/blog/deletepost/${post.id}&quot; class=&quot;ui button red labeled icon&quot;&gt;&lt;i class=&quot;icon delete&quot;&gt;&lt;/i&gt; Delete &lt;/a&gt;
+
+  &lt;section class=&quot;ui stacked segment&quot;&gt;
+    &lt;h5 class=&quot;ui inverted blue block header&quot;&gt;Comments:&lt;/h5&gt;
+    #{list items:post.comments, as:'comment'}
+      &lt;p&gt; 
+        ${comment.content}
+        &lt;hr&gt;
+      &lt;/p&gt;
+    #{/list}  
+  &lt;/section&gt;
+
+&lt;/section&gt;
+
+&lt;section class=&quot;ui form segment&quot;&gt;
+  &lt;h4 class=&quot;ui inverted blue block header&quot;&gt;Add a comment&lt;/h4&gt;
+  &lt;form action=&quot;/blogpost/comment/${post.id}&quot; method=&quot;POST&quot;&gt;
+    &lt;div class=&quot;field&quot;&gt;
+      &lt;textarea name=&quot;content&quot; placeholder=&quot;Content&quot;&gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+    &lt;button class=&quot;ui button green submit labeled icon&quot;&gt;&lt;i class=&quot;icon edit&quot;&gt;&lt;/i&gt; Add Comment &lt;/button&gt;
+  &lt;/form&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>The above version does not include date / time or author.</p>
+<h3>Author Support</h3>
+<p>First, tackle author. We will need to record the author in the model:</p>
+<pre><code>package models;
+
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
+import play.db.jpa.Model;
+
+@Entity
+public class Comment extends Model
+{
+  @Lob
+  public String content;
+
+  @OneToOne 
+  public User author;
+
+  public Comment(User author, String content)
+  {
+    this.author  = author;
+    this.content = content;
+  }
+}
+</code></pre>
+
+<p>Then, in newComment action, we need to pass this to the new user:</p>
+<pre><code>  public static void newComment(Long postid, String content)
+  {    
+    Logger.info(&quot;Post ID = &quot; + postid);
+    Post post = Post.findById(postid);
+
+    User user = Accounts.getLoggedInUser();
+    Comment comment = new Comment(user, content);    
+    post.comments.add(comment);
+    post.save();
+    view(postid);
+  }
+</code></pre>
+
+<p>The author is the currently logged in user.</p>
+<p>Finally, we can display the author after the comment text in <code>BlogPost/view.html</code>:</p>
+<pre><code class="html">        ${comment.content} : ${comment.author.firstName}
+</code></pre>
+
+<h3>Time Date Support</h3>
+<p>This is a revised version of comment which will contain a date/time stamp:</p>
+<pre><code class="java">package models;
+
+import java.util.Date;
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
+import play.db.jpa.Model;
+
+@Entity
+public class Comment extends Model
+{
+  @Lob
+  public String content;
+
+  @OneToOne 
+  public User author;
+
+  public Date postedAt;
+
+  public Comment(User author, String content)
+  {
+    this.author  = author;
+    this.content = content;
+    this.postedAt = new Date();
+  }
+}
+</code></pre>
+
+<p>With the time stamp being recorded, we can extend the view to print it for each comment:</p>
+<pre><code class="html">        ${comment.content} : ${comment.author.firstName} : on : ${comment.postedAt.format('dd MMM yy HH:mm:ss')}
+</code></pre>
+	  </section>
+	  <section data-tab="08" class="ui tab stacked moodle-book segment">
+	     <h1>Story 8: Public Blog</h1>
+<h2>Problem</h2>
+<p>The url of the blog should be 'public'.  I.e any user (whether logged in or not) can read the blog if they have the correct url. 
+Only logged in users can leave comments however.</p>
+<h2>Solution</h2>
+<p>Make a new route as follows:</p>
+<pre><code>GET   /blog/publicblog/{userid}                 Blog.publicBlog
+</code></pre>
+
+<p>Introduce this new action into Blog.java controller:</p>
+<pre><code class="java">  public static void publicBlog(Long userid)
+  {
+    User user = User.findById(userid);
+    render(user);
+  }
+</code></pre>
+
+<p>And this matching view in <code>views/Blog/publicblog.html</code></p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Blog' /}
+
+&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;div class=&quot;title item&quot;&gt; Spacebook &lt;/div&gt;
+&lt;/nav&gt; 
+
+&lt;h1 class=&quot;ui inverted red block header&quot; &gt;${user.firstName} ${user.lastName} 's Blog&lt;/h1&gt;
+</code></pre>
+
+<p>Try this now, and verify that these pages appear:</p>
+<ul>
+<li><a href="http://localhost:9000/blog/publicblog/1">http://localhost:9000/blog/publicblog/1</a></li>
+<li><a href="http://localhost:9000/blog/publicblog/2">http://localhost:9000/blog/publicblog/2</a></li>
+<li><a href="http://localhost:9000/blog/publicblog/3">http://localhost:9000/blog/publicblog/3</a></li>
+<li><a href="http://localhost:9000/blog/publicblog/4">http://localhost:9000/blog/publicblog/4</a></li>
+</ul>
+<p>To display the blog, extend the view as below:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Blog' /}
+
+&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;div class=&quot;title item&quot;&gt; Spacebook &lt;/div&gt;
+&lt;/nav&gt; 
+
+&lt;h1 class=&quot;ui inverted red block header&quot; &gt;${user.firstName} ${user.lastName} 's Blog&lt;/h1&gt;
+
+&lt;section class=&quot;ui stacked segment&quot;&gt;
+  &lt;h2 class=&quot;ui inverted blue block header&quot;&gt;Published Posts&lt;/h4&gt;
+  #{list items:user.posts, as:'post'}
+    &lt;h3 class=&quot;ui inverted green block header&quot;&gt; ${post.title}&lt;/h4&gt;
+    &lt;p&gt; ${post.content} &lt;/a&gt; 
+  #{/list}
+&lt;/section&gt;
+</code></pre>
+
+<p>This version does not show comments, but make sure it works before going further.</p>
+<p>We can expand the main section to display comments:</p>
+<pre><code class="html">&lt;section class=&quot;ui stacked segment&quot;&gt;
+  &lt;h2 class=&quot;ui inverted blue block header&quot;&gt;Published Posts&lt;/h4&gt;
+  #{list items:user.posts, as:'post'}
+    &lt;h3 class=&quot;ui inverted green block header&quot;&gt; ${post.title}&lt;/h4&gt;
+    &lt;p&gt; ${post.content} &lt;/a&gt; 
+
+    &lt;section class=&quot;ui raised segment&quot;&gt;
+    &lt;h5 class=&quot;ui inverted teal block header&quot;&gt;Comments:&lt;/h5&gt;
+    #{list items:post.comments, as:'comment'}
+      &lt;p&gt; 
+        ${comment.content} : ${comment.author.firstName} : on : ${comment.postedAt.format('dd MMM yy HH:mm:ss')}
+        &lt;hr&gt;
+      &lt;/p&gt;
+    #{/list}  
+    &lt;/section&gt;
+
+  #{/list}
+&lt;/section&gt;
+</code></pre>
+
+<p>Try this now on a blog with comments.</p>
+<p>If we want to leave comments, we should only permit it for logger in users. Here is one approach. Rework the action as follows:</p>
+<pre><code class="java">  public static void publicBlog(Long userid)
+  {
+    String userId     = session.get(&quot;logged_in_userid&quot;);
+    User loggedInUser = User.findById(Long.parseLong(userId));
+
+    User user = User.findById(userid);
+    render(user, loggedInUser);
+  }
+</code></pre>
+
+<p>Look at it carefully - we are passing two parameters to the view, the user whose blog we want to display + the currently logged in user. The logged in user may be null if there is now one logged in.</p>
+<p>Whether a user is logged in or not should be visible to the user. Here is an alternative menu for <code>views/Blog/publicblog.html</code></p>
+<pre><code class="html">&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;a  class=&quot;item&quot; href=&quot;/home&quot;&gt;Spacebook&lt;/a&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    #{if loggedInUser}
+      &lt;div class=&quot;item&quot;&gt; Logged in as ${loggedInUser.firstName} ${loggedInUser.lastName} &lt;/div&gt;
+    #{/if}
+    #{else}
+      &lt;a class=&quot;item&quot; href=&quot;/login&quot;&gt; Log in to comment &lt;/a&gt;
+    #{/else}
+  &lt;/div&gt;
+&lt;/nav&gt; 
+</code></pre>
+
+<p>Try this now. If you are browsing a blog while not logged in, it should be apparent in the UI. If you are logged in, then the account name should appear in the top right.</p>
+<p>We can now rework the entire view to display a comment form if the user is logged in:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Blog' /}
+
+&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;a  class=&quot;item&quot; href=&quot;/home&quot;&gt;Spacebook&lt;/a&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    #{if loggedInUser}
+      &lt;div class=&quot;item&quot;&gt; Logged in as ${loggedInUser.firstName} ${loggedInUser.lastName} &lt;/div&gt;
+    #{/if}
+    #{else}
+      &lt;a class=&quot;item&quot; href=&quot;/login&quot;&gt; Log in to comment &lt;/a&gt;
+    #{/else}
+  &lt;/div&gt;
+&lt;/nav&gt; 
+
+&lt;h1 class=&quot;ui inverted red block header&quot; &gt;${user.firstName} ${user.lastName} 's Blog&lt;/h1&gt;
+
+&lt;section class=&quot;ui stacked segment&quot;&gt;
+  &lt;h2 class=&quot;ui inverted blue block header&quot;&gt;Published Posts&lt;/h4&gt;
+  #{list items:user.posts, as:'post'}
+    &lt;h3 class=&quot;ui inverted green block header&quot;&gt; ${post.title}&lt;/h4&gt;
+    &lt;p&gt; ${post.content} &lt;/a&gt; 
+
+    &lt;section class=&quot;ui raised segment&quot;&gt;
+    &lt;h5 class=&quot;ui inverted teal block header&quot;&gt;Comments:&lt;/h5&gt;
+    #{list items:post.comments, as:'comment'}
+      &lt;p&gt; 
+        ${comment.content} : ${comment.author.firstName} : on : ${comment.postedAt.format('dd MMM yy HH:mm:ss')}
+        &lt;hr&gt;
+      &lt;/p&gt;                 
+    #{/list}  
+    #{if loggedInUser}
+      &lt;section class=&quot;ui form segment&quot;&gt;
+        &lt;h4 class=&quot;ui inverted blue block header&quot;&gt;Add a comment&lt;/h4&gt;
+        &lt;form action=&quot;/blogpost/comment/${post.id}&quot; method=&quot;POST&quot;&gt;
+          &lt;div class=&quot;field&quot;&gt;
+            &lt;textarea name=&quot;content&quot; placeholder=&quot;Content&quot;&gt;&lt;/textarea&gt;
+          &lt;/div&gt;
+          &lt;button class=&quot;ui button green submit labeled icon&quot;&gt;&lt;i class=&quot;icon edit&quot;&gt;&lt;/i&gt; Add Comment &lt;/button&gt;
+        &lt;/form&gt;
+      &lt;/section&gt;
+    #{/if}
+    &lt;/section&gt;   
+  #{/list}
+&lt;/section&gt;
+</code></pre>
+
+<p>Note the last section - we only display the form for filling in a comment if the user is logged in.</p>
+<p>Try this now, and try to leave a comment. Look very carefully at the blog you actually leave a comment on. Do you notice anything odd? The problem with the above solution is that we are leaving comments on the wrong blog!</p>
+<p>We need a new action for adding comments, bring this into the Blog controller:</p>
+<pre><code class="java">  public static void newComment(Long userid, Long postid, String content)
+  {    
+    Logger.info(&quot;Post ID = &quot; + postid);
+    Post post = Post.findById(postid);
+
+    User user = Accounts.getLoggedInUser();
+    Comment comment = new Comment(user, content);    
+    post.comments.add(comment);
+    post.save();
+    publicBlog(userid);
+  }  
+</code></pre>
+
+<p>The supporting route is the most complicated we have seen:</p>
+<pre><code>POST  /blog/publicblog/{userid}/newcomment/{postid}  Blog.newComment
+</code></pre>
+
+<p>Try this now and see the comments will actually resolve as expected to the correct blog/post.</p>
+	  </section>
+	  <section data-tab="09" class="ui tab stacked moodle-book segment">
+	     <h1>Story 9: Members Blogs</h1>
+<h2>Problem</h2>
+<p>On the members page, provide a direct link to the blogs of each member</p>
+<h2>Solution</h2>
+<p>We have our members currently listed in the <code>components/memnbers.html</code>. Here is a new version to display the blog links:</p>
+<pre><code class="html">  &lt;table class=&quot;ui table segment&quot;&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        #{list items:users, as:'user'}
+        &lt;tr&gt;
+          &lt;td&gt;
+            #{if user.online}
+              &lt;i class=&quot;user green icon&quot;&gt;&lt;/i&gt;
+            #{/if}
+            #{else}
+              &lt;i class=&quot;user red icon&quot;&gt;&lt;/i&gt;
+            #{/else}
+          &lt;/td&gt;
+          &lt;td&gt;
+            ${user.firstName} ${user.lastName}
+          &lt;/td&gt;
+          &lt;td&gt;
+            ${user.statusText}  
+          &lt;/td&gt;
+          &lt;td&gt;
+            &lt;a href=&quot;members/follow/${user.id}&quot;&gt; (follow) &lt;/a&gt; 
+          &lt;/td&gt;  
+          &lt;td&gt;
+            &lt;a href=&quot;/blog/publicblog/${user.id}&quot;&gt; Blog &lt;/a&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+        #{/list}
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+</code></pre>
+
+<p>We have placed all the fields in a table.</p>
+	  </section>
+	  <section data-tab="10" class="ui tab stacked moodle-book segment">
+	     <h1>Story 10: Blog List</h1>
+<h2>Problem</h2>
+<p>On the start page - displayed before a user logs in - display a set of links to the the users who have blogs.
+If a user has not created any posts, do not show any link.</p>
+<h2>Solution</h2>
+<p>In the <code>Accounts/index.html</code> we can bring in the members component we just created:</p>
+<pre><code>#{extends 'main.html' /}
+#{set title:'Welcome to Spacebook' /}
+
+&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;header class=&quot;header item&quot;&gt; Spacebook &lt;/header&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/signup&quot;&gt; Signup  &lt;/a&gt;
+    &lt;a class=&quot;item&quot; href=&quot;/login&quot;&gt;  Login   &lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt; 
+
+&lt;section class=&quot;ui raised segment&quot;&gt;
+  &lt;p&gt; Signup or Log in to the Spacebook Service &lt;/p&gt;
+
+  #{include &quot;components/members.html&quot; /} 
+&lt;/section&gt;
+</code></pre>
+
+<p>Test this. Nothing is displayed! This is because the view does not have any users list to display.</p>
+<p>Open the Accounts controller and change the index action as follows:</p>
+<pre><code class="java">  public static void index()
+  {
+    List&lt;User&gt; users = User.findAll();
+    render(users);
+  }
+</code></pre>
+
+<p>Try again - and the list should appear on the start page.</p>
+	  </section>
+	  <section data-tab="Exercises" class="ui tab stacked moodle-book segment">
+	     <h1>Exercises</h1>
+<p>This is the solution at this stage:</p>
+<ul>
+<li><a href="archives/spacebook-app-assign-1-solution-A.zip">spacebook-app-assign-1-solution-A.zip</a></li>
+</ul>
+<p>This is a second version:</p>
+<ul>
+<li><a href="archives/spacebook-app-assign-1-solution-B.zip">spacebook-app-assign-1-solution-A.zip</a></li>
+</ul>
+<p>which has 2 key differences:</p>
+<ul>
+<li>All of the pages in 'components' have been removed, and replaced with equivalent pages in 'tags' folder. These use a slightly different syntax for accessing template parameters</li>
+<li>The styling has been simplified</li>
+</ul>
+<p>There were several excellent solutions from the class. Here are three which you might find useful to inspect:</p>
+<ul>
+<li><a href="archives/krug-anton.zip">krug-anton.zip</a></li>
+<li><a href="archives/coady-stephen.zip">coady-stephen.zip</a></li>
+<li><a href="archives/walsh-stephen.zip">walsh-stephen.zip</a></li>
+</ul>
+<p>Thanks to the guys for agreeing to have their work featured here</p>
+	  </section>
+  <div class="ui fixed bottom borderless menu">'
+    <div class="ui small item"> 
+    <p id="footertext">
+    Prepared by  Eamonn de Leastar (edeleastar@wit.ie). Except where otherwise noted, this content is licensed under a  
+     <a  href="http://creativecommons.org/licenses/by-nc/4.0/" title="External link to http://creativecommons.org/licenses/by-nc/4.0/" 
+       target="_blank">Creative Commons Attribution-NonCommercial 4.0 License
+     </a>
+     </p>
+    </div>
+  </div>   
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-49703418-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>  </body>
+ </html>

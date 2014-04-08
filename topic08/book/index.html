@@ -1,0 +1,824 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+   
+     <title> Lab-08 </title>
+   
+     <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+     <link rel="stylesheet" href="./style/semantic/css/semantic.min.css" type="text/css">  
+     <link rel="stylesheet" href="./style/custom/main.css" type="text/css"> 
+   
+     <script src="./style/custom/jquery-2.1.0.min.js"></script> 
+     <script src="./style/custom/jquery.address-1.6.min.js"></script>
+     <script src="./style/semantic/javascript/semantic.min.js"></script>
+   
+     <link rel="stylesheet" href="./style/highlight/school_book.css">
+     <script src="./style/highlight/highlight.pack.js"></script> 
+     <script>hljs.initHighlightingOnLoad();</script>
+   
+     <script src="./style/custom/common.js"> </script> 
+     <script src="./style/custom/main.js"> </script> 
+  </head>
+  <body>
+  <nav class="ui fixed top pointing borderless inverted menu">
+    <header class="header item"> <a href="../index.html">JPA
+</a></header>
+    <div class="right tab-menu menu">
+          <a class="item" data-tab="Lab-08"> Lab-08 </a>
+          <a class="item" data-tab="01"> 01 </a>
+          <a class="item" data-tab="02"> 02 </a>
+          <a class="item" data-tab="03"> 03 </a>
+          <a class="item" data-tab="04"> 04 </a>
+          <a class="item" data-tab="05"> 05 </a>
+          <a class="item" data-tab="06"> 06 </a>
+          <a class="item" data-tab="Exercises"> Exercises </a>
+    </div>
+  </nav>
+
+  <br>
+
+	  <section data-tab="Lab-08" class="ui tab stacked moodle-book segment">
+	     <h1>Objectives</h1>
+<ul>
+<li>Complete the model from lab 07, implementing<ul>
+<li>OneToMany</li>
+<li>ManyToOne</li>
+<li>ManyToMany</li>
+</ul>
+</li>
+</ul>
+	  </section>
+	  <section data-tab="01" class="ui tab stacked moodle-book segment">
+	     <h1>Model</h1>
+<p>This is the model we wish to finalise:</p>
+<p><img alt="Final Model" src="img/01.png"></p>
+<h1>Division + Sponsor</h1>
+<p>These are the new classes:</p>
+<h2>Division.java</h2>
+<pre><code class="java">package models;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
+import play.db.jpa.Model;
+
+@Entity
+public class Division extends Model
+{
+  public String name;
+
+  @OneToMany(cascade=CascadeType.ALL)
+  public List&lt;Club&gt; members = new ArrayList&lt;Club&gt;();
+
+  public Division(String name)
+  {
+    this.name = name;
+  } 
+
+  public void addClub(Club club)
+  {
+    members.add(club);
+  }
+
+  public String toString()
+  {
+    return name;
+  }
+
+  public static Division findByName(String name)
+  {
+    return find(&quot;name&quot;, name).first();
+  }
+}
+</code></pre>
+
+<h2>Sponsor.java</h2>
+<pre><code class="java">package models;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+
+import play.db.jpa.Model;
+
+@Entity
+public class Sponsor extends Model
+{
+  public String name;
+
+  @ManyToMany (mappedBy=&quot;sponsors&quot;)
+  public List&lt;Club&gt; support = new ArrayList&lt;Club&gt;();;
+
+  public Sponsor(String name)
+  {
+    this.name = name;
+  }
+
+  public void addSuport(Club club)
+  {
+    support.add(club);
+  }
+
+  public String toString()
+  {
+    return name;
+  }
+}
+</code></pre>
+
+<ul>
+<li>some modifications to Club:</li>
+</ul>
+<h2>Club.java</h2>
+<pre><code class="java">
+  //...
+  @ManyToMany
+  public List&lt;Sponsor&gt; sponsors = new ArrayList&lt;Sponsor&gt;();
+  //...
+
+  public void addSponsor(Sponsor company)
+  {
+    sponsors.add(company);  
+  }
+
+</code></pre>
+	  </section>
+	  <section data-tab="02" class="ui tab stacked moodle-book segment">
+	     <h1>Tests</h1>
+<p>We can significantly simplify aspects of the testing if we invest some time in setting up test objects in yaml first.</p>
+<p>Open 'test/data.yaml' and replace its contents with the following:</p>
+<pre><code>Club(dunmore):
+    name: dunmore
+
+Club(tramore):
+    name: tramore
+
+Club(fenor):
+    name: fenor
+
+Player(jim):
+    name: jim
+    club: dunmore
+
+Player(mary):
+    name: mary
+    club: dunmore
+
+Player(sam):
+    name: sam
+    club: tramore
+
+Player(john):
+    name: john
+    club: tramore
+
+Player(mike):
+    name: mike
+    club: fenor
+
+Player(linda):
+    name: linda
+    club: fenor    
+
+Division(senior):
+    name: senior
+    members:
+            - tramore
+            - dunmore
+
+Division(junior):
+    name: junior
+    members:
+            - fenor
+
+Sponsor(newsagent):
+    name: newsagent
+
+Sponsor(pub):
+    name: pub 
+</code></pre>
+
+<p>Now bring in a new test class that will exercise this model:</p>
+<pre><code class="java">import org.junit.*;
+
+import java.util.*;
+
+import play.Logger;
+import play.test.*;
+import models.*;
+
+public class ComprehensiveTest extends UnitTest
+{
+  @BeforeClass
+  public static void loadDB()
+  {
+    Fixtures.deleteAllModels();
+  }
+
+  public static void loadSponsorships()
+  {
+    Club    tramore   = Club.find(&quot;byName&quot;, &quot;tramore&quot;).first();
+    Club    dunmore   = Club.find(&quot;byName&quot;, &quot;dunmore&quot;).first();
+    Sponsor newsagent = Sponsor.find(&quot;byName&quot;, &quot;newsagent&quot;).first();
+
+    tramore.addSponsor(newsagent);
+    dunmore.addSponsor(newsagent);
+
+    newsagent.addSuport(tramore);
+    newsagent.addSuport(dunmore);
+
+    tramore.save();
+    dunmore.save();
+    newsagent.save();
+  }
+
+  @Before
+  public void setup()
+  {
+    Fixtures.loadModels(&quot;data.yml&quot;);
+    loadSponsorships();
+  }
+
+  @After
+  public void teardown()
+  {
+    Fixtures.deleteAllModels();
+  }
+
+  @Test
+  public void testPlayerClubLong()
+  {
+    Player jim;
+    Club   dunmore;
+
+    jim = Player.find(&quot;byName&quot;, &quot;jim&quot;).first();
+    assertNotNull(jim);
+    assertEquals(jim.name, &quot;jim&quot;);
+
+    dunmore = jim.club;
+    assertEquals(&quot;dunmore&quot;, dunmore.name);
+
+    dunmore = Club.find(&quot;byName&quot;, &quot;dunmore&quot;).first();
+    assertNotNull(dunmore);
+    assertEquals(&quot;dunmore&quot;, dunmore.name);    
+    assertEquals(2, dunmore.players.size());
+
+    Player p1 = dunmore.players.get(0);
+    assertTrue (p1.name.equals(&quot;jim&quot;) || p1.name.equals(&quot;mary&quot;));
+    Player p2 = dunmore.players.get(1);
+    assertTrue (p2.name.equals(&quot;jim&quot;) || p2.name.equals(&quot;mary&quot;));  
+  }
+
+  @Test
+  public void testDivisionClubLong()
+  {
+    Division senior = Division.find(&quot;byName&quot;, &quot;senior&quot;).first();
+    assertNotNull(senior);
+    assertEquals(2, senior.members.size());
+
+    Club c1 = senior.members.get(0);
+    Club c2  = senior.members.get(1);
+
+    assertTrue (c1.name.equals(&quot;tramore&quot;) || c1.name.equals(&quot;dunmore&quot;));      
+    assertTrue (c2.name.equals(&quot;tramore&quot;) || c2.name.equals(&quot;dunmore&quot;));          
+  }
+
+
+  //----------------------------------------------------------------------
+  @Test
+  public void testPlayerClub()
+  {
+    Club   dunmore = Club.find(&quot;byName&quot;, &quot;dunmore&quot;).first();
+    Player jim     = Player.find(&quot;byName&quot;, &quot;jim&quot;).first(); 
+    Player mary    = Player.find(&quot;byName&quot;, &quot;mary&quot;).first(); 
+    assertNotNull(mary);
+
+    assertTrue (dunmore.players.contains(jim));
+    assertTrue (dunmore.players.contains(mary)); 
+  }
+
+  @Test
+  public void testDivisionClub()
+  {
+    Division senior  = Division.find(&quot;byName&quot;, &quot;senior&quot;).first();
+    Club     dunmore = Club.find(&quot;byName&quot;, &quot;dunmore&quot;).first();
+    Club     tramore = Club.find(&quot;byName&quot;, &quot;tramore&quot;).first();
+
+    assertTrue (senior.members.contains(dunmore));
+    assertTrue (senior.members.contains(tramore));
+  }
+
+  @Test
+  public void testClubSponsorShort()
+  {
+    Sponsor  newsagent = Sponsor.find(&quot;byName&quot;, &quot;newsagent&quot;).first();
+    Club     dunmore   = Club.find(&quot;byName&quot;, &quot;dunmore&quot;).first();
+    Club     tramore   = Club.find(&quot;byName&quot;, &quot;tramore&quot;).first();
+
+    assertTrue(newsagent.support.contains(dunmore));
+    assertTrue(newsagent.support.contains(tramore));
+
+    assertTrue(dunmore.sponsors.contains(newsagent));
+    assertTrue(tramore.sponsors.contains(newsagent));
+  }
+
+  @Test
+  public void testEditPlayerClub()
+  {
+    Club   dunmore = Club.find(&quot;byName&quot;, &quot;dunmore&quot;).first();
+    Player jim     = Player.find(&quot;byName&quot;, &quot;jim&quot;).first(); 
+    Player mary    = Player.find(&quot;byName&quot;, &quot;mary&quot;).first();
+
+    dunmore.players.remove(mary);
+    mary.delete();
+    dunmore.save();
+
+    assertEquals (dunmore.players.size(), 1);
+    assertTrue (dunmore.players.contains(jim));
+
+    assertEquals(0, Player.find(&quot;byName&quot;, &quot;mary&quot;).fetch().size());
+
+    Player sara     = new Player(&quot;sara&quot;);
+    dunmore.addPlayer(sara);
+    dunmore.save();
+    assertEquals (dunmore.players.size(), 2);    
+  }
+
+  @Test
+  public void testEditClubSponsor()
+  {
+    Sponsor  newsagent = Sponsor.find(&quot;byName&quot;, &quot;newsagent&quot;).first();
+    Club     dunmore   = Club.find(&quot;byName&quot;, &quot;dunmore&quot;).first();
+
+    assertEquals(2, newsagent.support.size());  
+
+    newsagent.support.remove(dunmore);
+    dunmore.sponsors.remove(newsagent);
+
+    newsagent.save();
+    dunmore.save();
+
+    assertEquals(1, newsagent.support.size());  
+  }
+}
+</code></pre>
+
+<p>Run the app in test mode, and run this new test suite. All of these tests should run.</p>
+	  </section>
+	  <section data-tab="03" class="ui tab stacked moodle-book segment">
+	     <h1>Controllers/View</h1>
+<p>Incorporate all of these new artifacts:</p>
+<h2>Players</h2>
+<pre><code class="java">package controllers;
+
+import java.util.List;
+
+import models.Player;
+import play.mvc.Controller;
+
+public class Players extends Controller
+{      
+  public static void index()
+  {
+    List&lt;Player&gt; players = Player.findAll();
+    render (players);
+  }
+}
+</code></pre>
+
+<h2>Clubs</h2>
+<pre><code class="java">package controllers;
+
+import java.util.List;
+
+import models.Club;
+import play.mvc.Controller;
+
+public class Clubs extends Controller
+{      
+  public static void index()
+  {
+    List&lt;Club&gt; clubs = Club.findAll();
+    render (clubs);
+  }
+}
+</code></pre>
+
+<h2>Sponsors</h2>
+<pre><code class="java">package controllers;
+
+import java.util.List;
+
+import models.Sponsor;
+import play.mvc.Controller;
+
+public class Sponsors extends Controller
+{      
+  public static void index()
+  {
+    List&lt;Sponsor&gt; sponsors = Sponsor.findAll();
+    render (sponsors);
+  }
+}
+</code></pre>
+
+<h2>Divisions</h2>
+<pre><code class="java">package controllers;
+
+import java.util.List;
+
+import models.Division;
+import play.mvc.Controller;
+
+public class Division extends Controller
+{      
+  public static void index()
+  {
+    List&lt;Division&gt; divisions = Division.findAll();
+
+    render (divisions);
+  }
+}
+</code></pre>
+
+<p>You will also need the corresponding views - each one called <code>index.html</code>:</p>
+<h2>views/Players</h2>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Players' /}
+
+&lt;nav&gt;
+  &lt;a class=&quot;item&quot;         href=&quot;/divisions&quot;&gt; Divisions &lt;/a&gt;
+  &lt;a class=&quot;item&quot;         href=&quot;/clubs&quot;&gt;     Clubs     &lt;/a&gt;
+  &lt;a class=&quot;active item&quot;  href=&quot;/players&quot;&gt;   Players   &lt;/a&gt;            
+  &lt;a class=&quot;item&quot;         href=&quot;/sponsors&quot;&gt;  Sponsors  &lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;section&gt;        
+ &lt;h1&gt;Players&lt;/h1&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Player&lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      #{list items:players, as:'player'}
+        &lt;tr&gt;
+          &lt;td&gt;${player.name}&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      #{/list}
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/section&gt;
+</code></pre>
+
+<h2>views/Clubs</h2>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Clubs' /}
+
+&lt;nav&gt;
+  &lt;a class=&quot;item&quot;         href=&quot;/divisions&quot;&gt; Divisions &lt;/a&gt;
+  &lt;a class=&quot;active item&quot;  href=&quot;/clubs&quot;&gt;     Clubs     &lt;/a&gt;
+  &lt;a class=&quot;item&quot;         href=&quot;/players&quot;&gt;   Players   &lt;/a&gt;            
+  &lt;a class=&quot;item&quot;         href=&quot;/sponsors&quot;&gt;  Sponsors  &lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;section&gt;        
+ &lt;h1&gt;Clubs&lt;/h1&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Club&lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      #{list items:clubs, as:'club'}
+        &lt;tr&gt;
+          &lt;td&gt;${club.name}&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      #{/list}
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/section&gt;
+
+
+</code></pre>
+
+<h2>views/Sponsors</h2>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Sponsors'/}
+
+&lt;nav&gt;
+  &lt;a class=&quot;item&quot;         href=&quot;/divisions&quot;&gt; Divisions &lt;/a&gt;
+  &lt;a class=&quot;item&quot;         href=&quot;/clubs&quot;&gt;     Clubs     &lt;/a&gt;
+  &lt;a class=&quot;item&quot;         href=&quot;/players&quot;&gt;   Players   &lt;/a&gt;            
+  &lt;a class=&quot;active item&quot;  href=&quot;/sponsors&quot;&gt;  Sponsors  &lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;section&gt;        
+ &lt;h1&gt;Sponsors&lt;/h1&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Sponsor&lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      #{list items:sponsors, as:'sponsor'}
+        &lt;tr&gt;
+          &lt;td&gt;${sponsor.name}&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      #{/list}
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/section&gt;
+</code></pre>
+
+<h2>views/Divisions</h2>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Divisions' /}
+
+&lt;nav&gt;
+  &lt;a class=&quot;active item&quot;  href=&quot;/divisions&quot;&gt; Divisions &lt;/a&gt;
+  &lt;a class=&quot;item&quot;         href=&quot;/clubs&quot;&gt;     Clubs     &lt;/a&gt;
+  &lt;a class=&quot;item&quot;         href=&quot;/players&quot;&gt;   Players   &lt;/a&gt;            
+  &lt;a class=&quot;item&quot;         href=&quot;/sponsors&quot;&gt;  Sponsors  &lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;section&gt;        
+ &lt;h1&gt;Divisions&lt;/h1&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Division&lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      #{list items:divisions, as:'division'}
+        &lt;tr&gt;
+          &lt;td&gt;${division.name}&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      #{/list}
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/section&gt;
+</code></pre>
+	  </section>
+	  <section data-tab="04" class="ui tab stacked moodle-book segment">
+	     <h1>Routes + Test Data</h1>
+<p>Now incorporate the following routes:</p>
+<pre><code># Home page
+GET     /                                       Divisions.index
+GET     /divisions                              Divisions.index
+GET     /clubs                                  Clubs.index
+GET     /players                                Players.index
+GET     /sponsors                               Sponsors.index
+</code></pre>
+
+<p>Save everything and run (not in test mode). Browse to</p>
+<ul>
+<li><a href="http://localhost:9000/players">http://localhost:9000/players</a></li>
+<li><a href="http://localhost:9000/clubs">http://localhost:9000/clubs</a></li>
+<li><a href="http://localhost:9000/sponsors">http://localhost:9000/sponsors</a></li>
+<li><a href="http://localhost:9000/divisions">http://localhost:9000/divisions</a></li>
+</ul>
+<p>It views will be largely bank and unformatted. </p>
+<p>There is a data.yaml file in your test folder. Copy this to the conf folder (there will now me two files of this name).</p>
+<p>Create a class called 'BootStrap.java' in you 'app' folder, and replace its content with this source here:</p>
+<h2>BootStrap.java</h2>
+<pre><code class="java">import java.util.List;
+
+import play.*;
+import play.jobs.*;
+import play.test.*;
+import models.*;
+
+@OnApplicationStart
+public class Bootstrap extends Job 
+{ 
+  public void doJob()
+  {
+    Fixtures.deleteDatabase(); 
+    Fixtures.loadModels(&quot;data.yml&quot;);
+  }
+}
+</code></pre>
+
+<p>Run the app again, and you should start to see some data.</p>
+	  </section>
+	  <section data-tab="05" class="ui tab stacked moodle-book segment">
+	     <h1>Showing Division/Club/Player Relationships</h1>
+<p>Currently UI for the model if read only - and we can only see each model in isolation (we cant see relationships).</p>
+<p>First, we tackle the relationships. Update the <code>&lt;table&gt;</code> element of the following views with this version:</p>
+<h2>views/Players/index.html</h2>
+<pre><code class="html">&lt;section&gt;        
+ &lt;h1&gt;Players&lt;/h1&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt; Player&lt;/th&gt;
+        &lt;th&gt; Club &lt;/th&gt;
+        &lt;th&gt; &lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      #{list items:players, as:'player'}
+        &lt;tr&gt;
+          &lt;td&gt;${player.name}&lt;/td&gt;
+          &lt;td&gt;${player.club.name}&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      #{/list}
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/section&gt;
+</code></pre>
+
+<h2>views/ClubsController/index.html</h2>
+<pre><code class="html">&lt;section&gt;        
+  &lt;h1&gt;Clubs&lt;/h1&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Club&lt;/th&gt;
+        &lt;th&gt;&lt;/th&gt;
+        &lt;th&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      #{list items:clubs, as:'club'}
+        &lt;tr&gt;
+          &lt;td&gt;${club.name}&lt;/td&gt;
+          &lt;td&gt;
+             &lt;table&gt;
+               &lt;tr&gt;
+               #{list items:club.players, as:'player'}
+                 &lt;td&gt;${player.name}&lt;/td&gt; &lt;/tr&gt;
+               #{/list}
+               &lt;/tr&gt;
+             &lt;/table&gt;         
+          &lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      #{/list}
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/section&gt;
+</code></pre>
+
+<h2>views/DivisionsController/index.html</h2>
+<pre><code class="html">&lt;section&gt;        
+  &lt;h1&gt;Divisions&lt;/h1&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Division&lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+        &lt;th&gt;
+        &lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      #{list items:divisions, as:'division'}
+        &lt;tr&gt;
+          &lt;td&gt;${division.name}&lt;/td&gt;
+          &lt;td&gt;
+            &lt;table class=&quot;table&quot;&gt;
+              &lt;tr&gt;
+              #{list items:division.members, as:'club'}
+                &lt;td&gt;${club.name}&lt;/td&gt; &lt;/tr&gt;
+              #{/list}
+              &lt;/tr&gt;
+            &lt;/table&gt;
+          &lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      #{/list}
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>See if you can make sense of the above templates. Save everything and reload. You should be able to see what players belong to which clubs, and also what divisions the clubs are in.</p>
+	  </section>
+	  <section data-tab="06" class="ui tab stacked moodle-book segment">
+	     <h1>Delete Player Feature</h1>
+<p>Introduce the following method into the controllers/Players:</p>
+<pre><code class="java">  public static void delete(Long id)
+  {
+    Player player = Player.findById(id);
+    if (player != null)
+    {
+      if (player.club != null)
+      {
+        player.club.removePlayer(player);
+        player.club.save();
+      }
+      player.delete();
+    }
+    index();
+  }
+</code></pre>
+
+<p>Which requires this method in models/Club.java</p>
+<pre><code class="java">  public void removePlayer(Player player)
+  {
+    players.remove(player);
+  }
+</code></pre>
+
+<p>Now change the loop in the 'views/Players/index.html' file:</p>
+<pre><code class="html">      #{list items:players, as:'player'}
+        &lt;tr&gt;
+          &lt;td&gt;${player.name}&lt;/td&gt;
+          &lt;td&gt;${player.club.name}&lt;/td&gt;
+          &lt;td&gt; &lt;a href=&quot;/players/delete/${player.id}&quot;&gt;Delete&lt;/a&gt; &lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      #{/list}
+</code></pre>
+
+<p>(just one line changed in the above).</p>
+<p>Run the app - players now have a delete button, when you press it, you get an error. This is because we need to establish a route for the delete link. Introduce this in to conf/routes now:</p>
+<pre><code>GET    /players/delete/{id}                     Players.delete
+</code></pre>
+
+<p>And try again. You should be able to delete players.</p>
+	  </section>
+	  <section data-tab="Exercises" class="ui tab stacked moodle-book segment">
+	     <h1>Exercises</h1>
+<h2>Archive sp far</h2>
+<ul>
+<li><a href="archives/jpamodel.zip">jpamodel.zip</a></li>
+</ul>
+<h2>Exercise 1</h2>
+<p>Try to incorporate the latest version of the semantic ui css framework into your application, and restyle all of the views to take advantage of the framework. This is to include making the current <code>&lt;nav&gt;</code> work as expected.</p>
+<h2>Exercise 2</h2>
+<p>We have a 'delete' link for players, introduce a similar delete link for all of the other model elements.</p>
+<h2>Exercise 3</h2>
+<p>On the player view, introduce a new button at the end of the view (not in the menu) called 'New Player'. This should present a simple form to register a new player and add to the database.</p>
+<p>Challenge: How will you allow a player to be associated with a club?</p>
+	  </section>
+  <div class="ui fixed bottom borderless menu">'
+    <div class="ui small item"> 
+    <p id="footertext">
+    Prepared by  Eamonn de Leastar (edeleastar@wit.ie). Except where otherwise noted, this content is licensed under a  
+     <a  href="http://creativecommons.org/licenses/by-nc/4.0/" title="External link to http://creativecommons.org/licenses/by-nc/4.0/" 
+       target="_blank">Creative Commons Attribution-NonCommercial 4.0 License
+     </a>
+     </p>
+    </div>
+  </div>   
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-49703418-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>  </body>
+ </html>

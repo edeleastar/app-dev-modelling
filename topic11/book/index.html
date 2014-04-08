@@ -1,0 +1,241 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+   
+     <title> Lab-11 </title>
+   
+     <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+     <link rel="stylesheet" href="./style/semantic/css/semantic.min.css" type="text/css">  
+     <link rel="stylesheet" href="./style/custom/main.css" type="text/css"> 
+   
+     <script src="./style/custom/jquery-2.1.0.min.js"></script> 
+     <script src="./style/custom/jquery.address-1.6.min.js"></script>
+     <script src="./style/semantic/javascript/semantic.min.js"></script>
+   
+     <link rel="stylesheet" href="./style/highlight/school_book.css">
+     <script src="./style/highlight/highlight.pack.js"></script> 
+     <script>hljs.initHighlightingOnLoad();</script>
+   
+     <script src="./style/custom/common.js"> </script> 
+     <script src="./style/custom/main.js"> </script> 
+  </head>
+  <body>
+  <nav class="ui fixed top pointing borderless inverted menu">
+    <header class="header item"> <a href="../index.html">UML II
+</a></header>
+    <div class="right tab-menu menu">
+          <a class="item" data-tab="Lab-11"> Lab-11 </a>
+          <a class="item" data-tab="01"> 01 </a>
+          <a class="item" data-tab="02"> 02 </a>
+          <a class="item" data-tab="03"> 03 </a>
+          <a class="item" data-tab="04"> 04 </a>
+          <a class="item" data-tab="05"> 05 </a>
+          <a class="item" data-tab="06"> 06 </a>
+          <a class="item" data-tab="07"> 07 </a>
+          <a class="item" data-tab="Exercises"> Exercises </a>
+    </div>
+  </nav>
+
+  <br>
+
+	  <section data-tab="Lab-11" class="ui tab stacked moodle-book segment">
+	     <h1>Objectives</h1>
+<ul>
+<li>Evolve the JpaModel uml model to include<ul>
+<li>Use Case</li>
+<li>Package</li>
+<li>Class</li>
+<li>Sequence
+ Build these diagrams using the 'instant reverse' feature of Visual Paradigm</li>
+</ul>
+</li>
+</ul>
+	  </section>
+	  <section data-tab="01" class="ui tab stacked moodle-book segment">
+	     <h1>Reverse a Model</h1>
+<p>If you have completed the last lab, then use the schema project you produce there. Otherwise here is a complete solution:</p>
+<ul>
+<li><a href="archives/jpamodel.zip">jpamodel.zip</a></li>
+</ul>
+<p>Launch Visual Paradigm and create a new Project called schema:</p>
+<p><img alt="" src="img/01.png"></p>
+<p>Select 'Tools-&gt;Code Engineering-&gt;Instant Reverse-&gt;Java' and in the subsequent dialog select 'Add Source Folder' and locate your schema project's 'app' folder</p>
+<p><img alt="" src="img/02.png"></p>
+<p>Select this and press ok</p>
+<p><img alt="" src="img/03.png"></p>
+<p>Press ok again, your project should look like this:</p>
+<p><img alt="" src="img/04.png"></p>
+<p>Play close attention to the 4 views available for the project:</p>
+<p><img alt="" src="img/05.png"></p>
+<ul>
+<li>Diagram Navigator</li>
+<li>Model Explorer</li>
+<li>Class Repository</li>
+<li>Logical View</li>
+<li>ORM</li>
+</ul>
+<p>We are mostly interested in</p>
+<h2>Diagram Navigator</h2>
+<p><img alt="" src="img/06.png"></p>
+<h2>Class Repository</h2>
+<p><img alt="" src="img/07.png"></p>
+	  </section>
+	  <section data-tab="02" class="ui tab stacked moodle-book segment">
+	     <h1>Model Class Diagram</h1>
+<p>Before we generate a diagram, we will set some defaults regarding UML presentation and styling.</p>
+<p>Select "Tools-&gt;Project Options-&gt;Diagramming-&gt;Shape", and set the Fill Format to be White:</p>
+<p><img alt="" src="img/06.png"></p>
+<p>Then select "Class-&gt;Presentation" on the same screen, and select "Hide all" for "Show Attribute option" and "Show operation option":</p>
+<p><img alt="" src="img/08.png"></p>
+<p>Open the "Diagram Navigator" view:</p>
+<p><img alt="" src="img/09.png"></p>
+<p>These changes to the default configuration will make the next steps a little clearer.</p>
+<p>Open the diagram navigator, select 'Class Diagram' and create a new class diagram called 'models'</p>
+<p><img alt="" src="img/10.png"></p>
+<p>Switch to the 'Class Repository' view, and expand the various class:</p>
+<p><img alt="" src="img/11.png"></p>
+<p>In "Class Repository", select all the classes under 'models' and drag them onto the (hopefully already open) canvas of the class diagram. You will asked about setting the default package to 'models' - say yes to this.</p>
+<p>The generated diagram will look like this:</p>
+<p><img alt="" src="img/12.png"></p>
+<p>As you can see it has modeled each association individually. We can accept this, or rework the diagram to combine these associations like this:</p>
+<p><img alt="" src="img/13.png"></p>
+<p>This is accomplished by just deleting on of the associations and equipping the other with the correct characteristics.</p>
+	  </section>
+	  <section data-tab="03" class="ui tab stacked moodle-book segment">
+	     <h1>Package Diagram</h1>
+<p>Switch back to "Diagram Navigator", and create a new Package Diagram called 'schema':</p>
+<p><img alt="" src="img/16.png"></p>
+<p>Create a single package called 'models' by dragging the 'Package' icon onto the canvas:</p>
+<p><img alt="" src="img/15.png"></p>
+<p>Because we have named the package the same as the class diagram - it should be able to navigate form one to the other just by right-clicking on the package.</p>
+<p><img alt="" src="img/17.png"></p>
+	  </section>
+	  <section data-tab="04" class="ui tab stacked moodle-book segment">
+	     <h1>Schema Architecture</h1>
+<p>Create another packaged called "play" in the same package diagram. Now create a new "Class Diagram" also called "play". Populate this class diagram with these four classes:</p>
+<p><img alt="" src="img/18.png"></p>
+<p>This models classes we did not write, but are part of our application via the Play framework.</p>
+<p>Do the same exercise for a another pair of package/class diagrams called 'controllers', and also another pair called 'views'.</p>
+<p>Using the 'Dependency' tool, configure the package diagram to look like this:</p>
+<p><img alt="" src="img/19.png"></p>
+<p>This is the top-level 'Architecture' for you application.</p>
+	  </section>
+	  <section data-tab="05" class="ui tab stacked moodle-book segment">
+	     <h1>Controllers</h1>
+<p>Open the 'models' class diagram and select all of the classes on the canvas and copy them to the clipboard.</p>
+<p>Now open the controllers class diagram, and paste the clipboard</p>
+<p><img alt="" src="img/19a.png"></p>
+<p><img alt="" src="img/20.png"></p>
+<p>All the relationships shown here are 'Generalization' - which is anther word for inheritance. Some of the classes when you drag them over with be already wired up like this, others you will need to manually create.</p>
+<p>Also, note that 'Controller' class has '(play)' under it, and the model classes have '(models)'. This indicates they are from a different package. To show this, right click on the each of these classes and select 'Presentation Options-&gt;Show Owner-&gt;Show Fully Qualified'. Essentially, we are indicating that these classes belong to a different package.</p>
+<p>Now we will drag in the model classes (drag them from the schema/models tree control at the top of the Class Repository).</p>
+<p>The Controller classes 'depend' on these classes in a specific configuration. Using the 'Dependency' relation, see if you can reconfigure the controllers class diagram to look something like this:</p>
+<p><img alt="" src="img/21.png"></p>
+<p>Inspect the sources of the controllers again, verify that the above diagram accurately captures these dependencies.</p>
+	  </section>
+	  <section data-tab="06" class="ui tab stacked moodle-book segment">
+	     <h1>Sequence Diagrams</h1>
+<p>The Package and Class diagrams we have assembled to date represent 'structural' information about our design. I.e. the relationships between the classes.</p>
+<p>Sequence Diagrams will attempt to show some 'behavioral' information. That is, how the objects may interact in response to some specific event. Sequence diagrams are often traced back to 'User Stories' - specifically, how our objects collaborate to deliver some feature.</p>
+<p>These diagrams can be difficult to draw and maintain. However, the tool we are using has the ability to analyze our code and 'reverse engineer' these diagrams.</p>
+<p>Select the PlayersControler.java-&gt;PlayersController-&gt;newPlayer() icon, right click:</p>
+<p><img alt="" src="img/22.png"></p>
+<p>.. and select "Reverse "newPlayer" to"-&gt;Sequence Diagram"</p>
+<p><img alt="" src="img/23.png"></p>
+<p>Accept the default diagram name, press finish, and the following diagram will be generated:</p>
+<p><img alt="" src="img/24.png"></p>
+<p>Read the source again for this method - and see if you can make sense of the notation.</p>
+<pre><code class="java">  public static void newPlayer()
+  {
+    List&lt;Club&gt; clubs = Club.findAll();
+    render(clubs);
+  }
+</code></pre>
+
+<p>Try a more sophisticated method (make sure it is a new sequence diagram - not an existing one):</p>
+<h2>Players.createPlayer()</h2>
+<p><img alt="" src="img/25.png"></p>
+<p>This is considerably more complex. Here is the code:</p>
+<pre><code class="java">  public static void delete(Long id)
+  {
+    Player player = Player.findById(id);
+    if (player != null)
+    {
+      if (player.club != null)
+      {
+        player.club.removePlayer(player);
+        player.club.save();
+      }
+      player.delete();
+    }
+    index();
+  }
+</code></pre>
+
+<p>Here is probably the most complicated one:</p>
+<h2>Clubs.delete()</h2>
+<p><img alt="" src="img/26.png"></p>
+<pre><code class="java">  public static void delete(Long id)
+  {
+    Club club = Club.findById(id);
+    if (club != null)
+    {
+      List&lt;Division&gt; divisions = Division.findAll();
+      for (Division division : divisions)
+      {
+        if (division.members.contains(club))
+        {
+          division.members.remove(club);
+          division.save();
+        }
+      }
+      club.delete();
+    }
+    index();
+  }  
+</code></pre>
+	  </section>
+	  <section data-tab="07" class="ui tab stacked moodle-book segment">
+	     <h1>Use Case Diagrams</h1>
+<p>Your Diagram Explorer might begin to look like this:</p>
+<p><img alt="" src="img/27.png"></p>
+<p>The last diagram type to explore is "Use Case Diagram".</p>
+<p>Create one now - to model a 'New Player' user story:</p>
+<p><img alt="" src="img/28.png"></p>
+<p>Try a few more stories...</p>
+	  </section>
+	  <section data-tab="Exercises" class="ui tab stacked moodle-book segment">
+	     <h1>Exercises</h1>
+<p>This is a version of the model here:</p>
+<ul>
+<li><a href="archives/schema.vpp">schema.vpp</a></li>
+</ul>
+<p>Experiment with some more diagrams, particularly some more Sequence Diagrams.</p>
+	  </section>
+  <div class="ui fixed bottom borderless menu">'
+    <div class="ui small item"> 
+    <p id="footertext">
+    Prepared by  Eamonn de Leastar (edeleastar@wit.ie). Except where otherwise noted, this content is licensed under a  
+     <a  href="http://creativecommons.org/licenses/by-nc/4.0/" title="External link to http://creativecommons.org/licenses/by-nc/4.0/" 
+       target="_blank">Creative Commons Attribution-NonCommercial 4.0 License
+     </a>
+     </p>
+    </div>
+  </div>   
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-49703418-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>  </body>
+ </html>

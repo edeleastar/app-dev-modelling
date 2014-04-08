@@ -1,0 +1,505 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+   
+     <title> Lab-02 </title>
+   
+     <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+     <link rel="stylesheet" href="./style/semantic/css/semantic.min.css" type="text/css">  
+     <link rel="stylesheet" href="./style/custom/main.css" type="text/css"> 
+   
+     <script src="./style/custom/jquery-2.1.0.min.js"></script> 
+     <script src="./style/custom/jquery.address-1.6.min.js"></script>
+     <script src="./style/semantic/javascript/semantic.min.js"></script>
+   
+     <link rel="stylesheet" href="./style/highlight/school_book.css">
+     <script src="./style/highlight/highlight.pack.js"></script> 
+     <script>hljs.initHighlightingOnLoad();</script>
+   
+     <script src="./style/custom/common.js"> </script> 
+     <script src="./style/custom/main.js"> </script> 
+  </head>
+  <body>
+  <nav class="ui fixed top pointing borderless inverted menu">
+    <header class="header item"> <a href="../index.html">MVC
+</a></header>
+    <div class="right tab-menu menu">
+          <a class="item" data-tab="Lab-02"> Lab-02 </a>
+          <a class="item" data-tab="01"> 01 </a>
+          <a class="item" data-tab="02"> 02 </a>
+          <a class="item" data-tab="03"> 03 </a>
+          <a class="item" data-tab="04"> 04 </a>
+          <a class="item" data-tab="05"> 05 </a>
+          <a class="item" data-tab="Exercises"> Exercises </a>
+    </div>
+  </nav>
+
+  <br>
+
+	  <section data-tab="Lab-02" class="ui tab stacked moodle-book segment">
+	     <h1>Objectives</h1>
+<ul>
+<li>Download and rediscover the spacebook application as concluded last semester</li>
+<li>Implement Assignment Stories 1-5</li>
+</ul>
+	  </section>
+	  <section data-tab="01" class="ui tab stacked moodle-book segment">
+	     <h1>Baseline project + Story 1</h1>
+<p>This is a completed project from last week:</p>
+<ul>
+<li><a href="archives/spacebook-app-lab01.zip">spacebook-app-lab01.zip</a></li>
+</ul>
+<p>Now download an unarchive the source project. In order to import this, you will need to do the following commands:</p>
+<pre><code>cd 'the directory into which you unarchived the project'
+play deps
+play eclipsify
+</code></pre>
+
+<p>In eclipse, import the project as an 'existing project'. Run the project in the usual way, and verify that it behaves as expected.</p>
+<h3>Assignment Story 1</h3>
+<p>We already have a 'data.yml' file in th conf directory (open this). This contained initial user data loaded at startup:</p>
+<pre><code>User(homer):
+    firstName: Homer
+    lastName: Simpson
+    email: homer@simpson.com
+    password: secret
+
+User(marge):
+    firstName: marge
+    lastName: Simpson
+    email: marge@simpson.com
+    password: secret
+</code></pre>
+
+<p>Verify that these are in your app.</p>
+<p>Extend this data to include the full homer clan. Note, the number of spaces (4) before each field is significant.</p>
+<h3>Assignment Story 1 Solution:</h3>
+<p>Introduce the following entries into the data.yml file:</p>
+<pre><code>User(lisa):
+    firstName: Lisa
+    lastName: Simpson
+    email: lisa@simpson.com
+    password: secret
+
+User(bart):
+    firstName: Bart
+    lastName: Simpson
+    email: bart@simpson.com
+    password: secret
+
+User(maggie):
+    firstName: Maggie
+    lastName: Simpson
+    email: maggie@simpson.com
+    password: secret
+</code></pre>
+	  </section>
+	  <section data-tab="02" class="ui tab stacked moodle-book segment">
+	     <h1>Assignment Story 2</h1>
+<p>Extend the User Model to include the following new fields:</p>
+<ul>
+<li>Age</li>
+<li>Nationality</li>
+</ul>
+<p>These fields must be filled in when a user registers.</p>
+<h3>Assignment Story 2 Solution</h3>
+<p>Bring these fields into User.java:</p>
+<pre><code class="java">  public int    age;
+  public String nationality;
+</code></pre>
+
+<p>And change the constructor to inialize these fields:</p>
+<pre><code class="java">  public User(String firstName, String lastName, String email, String password, int age, String nationality)
+  {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.password = password;
+    this.age = age;
+    this.nationality = nationality;
+  }
+</code></pre>
+
+<p>Now rework Accounts.register method:</p>
+<pre><code class="java">  public static void register(String firstName, String lastName, int age, String nationality,
+                              String email,     String password, String password2)
+  {
+    Logger.info(firstName + &quot; &quot; + lastName + &quot; &quot; + email + &quot; &quot; + password);
+    User user = new User(firstName, lastName, age, nationality, email, password);
+    user.save();
+    index();
+  }
+</code></pre>
+
+<h3>Exercise:</h3>
+<p>Extend Accounts/signup.html to allow the user provide these new fields</p>
+	  </section>
+	  <section data-tab="03" class="ui tab stacked moodle-book segment">
+	     <h1>Assignment Story 3</h1>
+<p>For the new fields accepted in Story 2, display them on the users Home Profile page.</p>
+<p>In addition, on the users 'Public' profile (then one a friend can see), display just the 'Nationality' field</p>
+<h3>Assignment Story 3 Solution</h3>
+<p>In <code>views/Profile/index.html</code> we can introduce a table to render the user details:</p>
+<pre><code class="html">        &lt;table class=&quot;ui table segment&quot;&gt;
+          &lt;thead&gt;
+            &lt;tr&gt;
+              &lt;th&gt;Email&lt;/th&gt;
+              &lt;th&gt;Nationality&lt;/th&gt;
+              &lt;th&gt;Age&lt;/th&gt;
+            &lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody&gt;
+            &lt;tr&gt;
+              &lt;td&gt;${user.email}&lt;/td&gt;
+              &lt;td&gt;${user.nationality}&lt;/td&gt;
+              &lt;td&gt;${user.age}&lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+</code></pre>
+
+<p>Place this in the left hand column, above the profile image</p>
+<p>In views/PublicProfile/visit.html, bring in a reduced version somewhere suitable:</p>
+<pre><code class="html">      &lt;table class=&quot;ui table segment&quot;&gt; 
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th&gt;Email&lt;/th&gt;
+            &lt;th&gt;Nationality&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;
+            &lt;td&gt;${user.email}&lt;/td&gt;
+            &lt;td&gt;${user.nationality}&lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+</code></pre>
+	  </section>
+	  <section data-tab="04" class="ui tab stacked moodle-book segment">
+	     <h1>Assignment Story 4</h1>
+<p>Even if a user seems to have logged out, we can still access the spacebook pages by entering the url of some of the controllers. For instance, log in, then log our immediately and try these links:</p>
+<ul>
+<li><a href="http://localhost:9000/home">http://localhost:9000/home</a></li>
+<li><a href="http://localhost:9000/profile">http://localhost:9000/profile</a></li>
+</ul>
+<p>How could you prevent this?</p>
+<p>HINT: The session object has a method called 'clear()'. If we call this (say in logout action), then it will remove any things we have put in there. For every action, we could first check to make sure a valid ID is in the session, otherwise redirect to the start page.</p>
+<h2>Assignment Story 4 Solution</h2>
+<p>Introduce a new method into Accounts controller:</p>
+<pre><code class="java">  public static User getLoggedInUser()
+  {
+    User user = null;
+    if (session.contains(&quot;logged_in_userid&quot;))
+    {
+      String userId = session.get(&quot;logged_in_userid&quot;);
+      user = User.findById(Long.parseLong(userId));
+    }
+    else
+    {
+      login();
+    }
+    return user;
+  }
+</code></pre>
+
+<p>Also, in Accounts.logout method - we clear the session:</p>
+<pre><code class="java">  public static void logout()
+  {
+    session.clear();
+    index();
+  }
+</code></pre>
+
+<p>For every method in every controller, compare them with the following, and make the appropriate adjustments:</p>
+<pre><code class="java">public class Home extends Controller
+{
+  public static void index()
+  {
+    User user = Accounts.getLoggedInUser();
+    render(user);
+  }
+
+  public static void drop(Long id)
+  {
+    User user   = Accounts.getLoggedInUser();    
+    User friend = User.findById(id);
+    user.unfriend(friend);
+    Logger.info(&quot;Dropping &quot; + friend.email);
+    index();
+  }  
+}
+</code></pre>
+
+<pre><code class="java">public class Profile extends Controller
+{
+  public static void index()
+  {
+    User user = Accounts.getLoggedInUser();
+    render(user);
+  }
+
+  public static void changeStatus(String statusText)
+  {
+    User user = Accounts.getLoggedInUser();
+    user.statusText = statusText;
+    user.save();
+    Logger.info(&quot;Status changed to &quot; + statusText);
+    index();
+  }
+
+  public static void getPicture(Long id) 
+  {
+    User user = User.findById(id);
+    Blob picture = user.profilePicture;
+    if (picture.exists())
+    {
+      response.setContentTypeIfNotSet(picture.type());
+      renderBinary(picture.get());
+    }
+  }
+
+  public static void uploadPicture(Long id, Blob picture)
+  {
+    User user = User.findById(id);
+    user.profilePicture = picture;
+    user.save();
+    Logger.info(&quot;saving picture&quot;);
+    index();
+  }  
+}
+</code></pre>
+
+<pre><code class="java">public class Members extends Controller
+{
+  public static void index()
+  {
+    User user = Accounts.getLoggedInUser();
+    List&lt;User&gt; users = User.findAll();
+    render(users);
+  }
+
+  public static void follow(Long id)
+  {
+    User user = Accounts.getLoggedInUser();
+    User friend = User.findById(id);
+    user.befriend(friend);
+    Home.index();
+  }
+}
+</code></pre>
+
+<pre><code class="java">public class PublicProfile extends Controller
+{
+  public static void visit(Long id)
+  {
+    User currentUser = Accounts.getLoggedInUser();
+
+    User user = User.findById(id);
+    Logger.info(&quot;Just visiting the page for &quot; + user.firstName + ' ' + user.lastName);
+    render(user);
+  }
+
+  public static void sendMessage(Long id, String messageText)
+  {
+    User fromUser = Accounts.getLoggedInUser();;
+    User toUser = User.findById(id);
+
+    Logger.info(&quot;Message from user &quot; + 
+        fromUser.firstName + ' ' + fromUser.lastName +&quot; to &quot; +
+        toUser.firstName + ' ' + toUser.lastName +&quot;: &quot; +
+        messageText);    
+
+    fromUser.sendMessage(toUser, messageText);
+    visit(id);
+  }  
+</code></pre>
+
+<p>When all these changes have been made, run the app and, without logging in, try to visit the urls of the home, profile and members pages.</p>
+<p>Then, log in and do the same. Finally, log out and do the same. Observe and verify the behaviour.</p>
+	  </section>
+	  <section data-tab="05" class="ui tab stacked moodle-book segment">
+	     <h2>Assignment Story 5</h2>
+<p>Provide a way for a user, once logged in, to change some of their profile information. You could take two approaches to this:</p>
+<ul>
+<li>Provide some extra fields on the home profile which could all be changed when the 'changeText' button is pressed.</li>
+<li>Provide a link on the home profile - say 'edit details' - which takes you to a new page where you can edit the details.</li>
+</ul>
+<h2>Assignment Story 5 Solution</h2>
+<p>Introduce a new controller called EditProfile:</p>
+<pre><code class="java">package controllers;
+
+import play.*;
+import play.mvc.*;
+import java.util.*;
+import models.*;
+
+public class EditProfile extends Controller
+{
+  public static void change (String firstName,   String lastName, int    age, 
+                             String nationality, String email,    String password, String password2)
+  {
+    User user = Accounts.getLoggedInUser();
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.nationality = nationality;
+    user.age = age;
+    user.password = password;
+    user.save();
+    Profile.index();
+  }
+
+  public static void index()
+  {
+    User user = Accounts.getLoggedInUser();
+    render(user);
+  }
+}
+</code></pre>
+
+<p>Match this with an accompanying view in views/EditProfile/index.html:</p>
+<pre><code class="html">#{extends 'main.html' /}
+#{set title:'Edit Details' /}
+
+&lt;nav class=&quot;ui inverted menu&quot;&gt;
+  &lt;header class=&quot;header item&quot;&gt; Spacebook &lt;/header&gt;
+  &lt;div class=&quot;right menu&quot;&gt;
+    &lt;a class=&quot;active item&quot; href=&quot;/profile&quot;&gt; Profile  &lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt; 
+
+&lt;div class=&quot;ui raised form segment&quot;&gt;
+  &lt;form action=&quot;/editprofile/change&quot; method=&quot;POST&quot;&gt;
+    &lt;div class=&quot;two fields&quot;&gt;
+      &lt;div class=&quot;field&quot;&gt;
+        &lt;label&gt;First Name&lt;/label&gt;
+        &lt;input placeholder=&quot;First Name&quot; type=&quot;text&quot; name=&quot;firstName&quot;&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;field&quot;&gt;
+        &lt;label&gt;Last Name&lt;/label&gt;
+        &lt;input placeholder=&quot;Last Name&quot; type=&quot;text&quot; name=&quot;lastName&quot;&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;two fields&quot;&gt;
+      &lt;div class=&quot;field&quot;&gt;
+        &lt;label&gt;Nationality&lt;/label&gt;
+        &lt;input placeholder=&quot;Nationality&quot; type=&quot;text&quot; name=&quot;nationality&quot;&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;field&quot;&gt;
+        &lt;label&gt;Age&lt;/label&gt;
+        &lt;input placeholder=&quot;Age&quot; type=&quot;text&quot; name=&quot;age&quot;&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;    &lt;div class=&quot;field&quot;&gt;
+      &lt;label&gt;Email&lt;/label&gt;
+      &lt;input placeholder=&quot;Email&quot; type=&quot;text&quot; name=&quot;email&quot;&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;field&quot;&gt;
+      &lt;label&gt;Password&lt;/label&gt;
+      &lt;input type=&quot;password&quot; name=&quot;password&quot;&gt;
+    &lt;/div&gt;
+    &lt;button class=&quot;ui blue submit button&quot;&gt;Submit&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/div&gt; 
+</code></pre>
+
+<p>In the views/HomeProfile/index.html, insert a link to this new controller:</p>
+<pre><code class="html">        &lt;a href=&quot;/editprofile&quot; class=&quot;ui button&quot;&gt; Edit &lt;/a&gt;
+</code></pre>
+
+<p>Finally, make introduce the appropriate routes:</p>
+<pre><code># Edit Profiles
+GET   /editprofile                              EditProfile.index
+POST  /editprofile/change                       EditProfile.change
+</code></pre>
+
+<p>Test that this works as expected.</p>
+	  </section>
+	  <section data-tab="Exercises" class="ui tab stacked moodle-book segment">
+	     <h1>Exercises</h1>
+<h2>Solution so far</h2>
+<ul>
+<li><a href="archives/spacebook-app-lab02.zip">spacebook-app-lab02.zip</a></li>
+</ul>
+<p>You will need to run 'play deps' and 'play eclipsify' before you import this.</p>
+<h2>Deployment</h2>
+<p>Now deploy the project to cloudbees. You may need to review this lab to recall the cloudbees deployment steps</p>
+<ul>
+<li><a href="http://edel020.bitbucket.org/web-dev/session08/labb/html/s02.html">Cloubbees Lab</a></li>
+</ul>
+<p>(Step 2 to 5 of the above lab is all you need)</p>
+<h2>Initial Fields</h2>
+<p>The EditProfile view is problematic. It presents the save fields as the signup form, however they are all blank. We really should have these fields 'filled in' - so that the user can see and make changes to the entries.</p>
+<p>The controller already passes the user details to the view:</p>
+<pre><code class="java">  public static void index()
+  {
+    User user = Accounts.getLoggedInUser();
+    render(user);
+  }
+</code></pre>
+
+<p>We need to change each entry in the form views/EditProgfile/index.html to something like this:</p>
+<pre><code class="html">        &lt;input placeholder=&quot;First Name&quot; type=&quot;text&quot; name=&quot;firstName&quot; value=&quot;${user.firstName}&quot;&gt;
+</code></pre>
+
+<p>(Note the last 'value' entry)</p>
+<p>Do this for all the fields in views/EditProgfile/index.html - except perhaps the password field</p>
+<h2>Resized Forms</h2>
+<p>Some of the form views are not correctly sized, with input boxes elongated. See if you can redesign the signup, login and editprofile forms to look like this:</p>
+<p><img alt="" src="img/01.png">
+<img alt="" src="img/02.png">
+<img alt="" src="img/03.png"></p>
+<h2>Missing Fields</h2>
+<p>Edit data.yaml to make sure that all users have nationality and age initial values.</p>
+<p>Additionally, it is possible to set up some initial messages:</p>
+<pre><code>Message(message1):
+    from : marge
+    to   : homer
+    messageText: 'how are things going?'
+
+Message(message2):
+    from : lisa
+    to   : homer
+    messageText: 'Get me outta here!'
+</code></pre>
+
+<p>and even some friend relationships:</p>
+<pre><code>User(homer):
+    firstName: Homer
+    lastName: Simpson
+    email: homer@simpson.com
+    password: secret
+    following: 
+              - marge
+              - lisa
+</code></pre>
+
+<p>Experiment with these to have a range of friends and messages for each user in the yaml file.</p>
+	  </section>
+  <div class="ui fixed bottom borderless menu">'
+    <div class="ui small item"> 
+    <p id="footertext">
+    Prepared by  Eamonn de Leastar (edeleastar@wit.ie). Except where otherwise noted, this content is licensed under a  
+     <a  href="http://creativecommons.org/licenses/by-nc/4.0/" title="External link to http://creativecommons.org/licenses/by-nc/4.0/" 
+       target="_blank">Creative Commons Attribution-NonCommercial 4.0 License
+     </a>
+     </p>
+    </div>
+  </div>   
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-49703418-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>  </body>
+ </html>
