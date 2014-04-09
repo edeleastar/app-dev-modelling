@@ -158,6 +158,14 @@
 POST   /players/changeplayer/{id}               Players.changePlayer
 </code></pre>
 
+<p>We also need to make sure the addPlayer method sends the list of clubs to the view:</p>
+<pre><code class="java">  public static void addPlayer()
+  {
+    List&lt;Club&gt; clubs = Club.findAll();
+    render(clubs);
+  }
+</code></pre>
+
 <p>Now, in <code>views/players/index.html', extend the table to include an</code>edit` button which will use the GET route above:</p>
 <pre><code class="html">...
 ...
